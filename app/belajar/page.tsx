@@ -21,7 +21,6 @@ export const metadata: Metadata = {
 };
 
 const HERO_CHAIN = [
-  { emoji: "☀️", label: "Matahari", className: "bg-[#FFF3CC] text-[#7A5A05]" },
   { emoji: "🌿", label: "Rumput", className: "bg-produsen-soft text-produsen-deep" },
   { emoji: "🦗", label: "Belalang", className: "bg-konsumen1-soft text-konsumen1-deep" },
   { emoji: "🐸", label: "Katak", className: "bg-konsumen2-soft text-konsumen2-deep" },
@@ -37,12 +36,15 @@ export default function BelajarPage() {
           <div className="rise">
             <p className="inline-flex items-center gap-2 rounded-full border-[3px] border-ink/15 bg-white px-3 py-1.5 text-xs font-extrabold uppercase tracking-wide text-ink-soft">
               <Leaf aria-hidden className="h-4 w-4 text-produsen" />
-              Bab 2 · Harmoni dalam Ekosistem
+              Harmoni dalam Ekosistem
             </p>
             <h1 className="mt-4 font-display text-4xl font-semibold leading-[1.05] tracking-tight text-ink sm:text-6xl">
               Rantai Makanan
             </h1>
-            <p className="mt-4 max-w-xl text-base font-semibold leading-relaxed text-ink/85 sm:text-lg">
+            <p className="mt-3 text-base font-extrabold text-ink sm:text-lg">
+              “Rantai makanan adalah proses perpindahan energi dan nutrisi antar makhluk hidup di suatu ekosistem.”
+            </p>
+            <p className="mt-3 max-w-xl text-sm font-semibold leading-relaxed text-ink/85 sm:text-base">
               Makhluk hidup memerlukan makanan untuk memperoleh energi, tumbuh,
               bergerak, dan berkembang biak. Energi itu berasal dari Matahari,
               lalu berpindah dari satu makhluk hidup ke makhluk hidup lain.
@@ -147,7 +149,7 @@ export default function BelajarPage() {
               id="aliran-heading"
               className="font-display text-3xl font-semibold text-ink sm:text-4xl"
             >
-              Matahari → Rumput → Belalang → Katak → Ular → Elang
+              Rumput → Belalang → Katak → Ular → Elang
             </h2>
           </div>
           <EnergyFlow />

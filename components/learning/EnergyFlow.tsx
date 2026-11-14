@@ -11,7 +11,6 @@ import {
 } from "@/lib/data/learning";
 
 const ROLE_STYLES: Record<EnergyStep["role"], string> = {
-  matahari: "bg-sun text-ink border-[#B9820B]",
   produsen: "bg-produsen-soft text-produsen-deep border-produsen",
   konsumen1: "bg-konsumen1-soft text-konsumen1-deep border-konsumen1",
   konsumen2: "bg-konsumen2-soft text-konsumen2-deep border-konsumen2",
@@ -53,7 +52,7 @@ export function EnergyFlow() {
                     {step.label}
                   </span>
                   <span className="text-[10px] font-bold uppercase tracking-wide opacity-80">
-                    {step.role === "matahari" ? "sumber energi" : step.role}
+                    {step.role}
                   </span>
                 </button>
                 {index < ENERGY_FLOW.length - 1 && (

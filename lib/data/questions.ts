@@ -70,7 +70,7 @@ export const SEED_QUESTIONS: EcoQuestion[] = [
       "hubungan antara manusia dan hewan peliharaan",
     ],
     0,
-    "Rantai makanan adalah peristiwa makan dan dimakan yang membentuk urutan perpindahan energi.",
+    "Rantai makanan adalah proses perpindahan energi dan nutrisi antar makhluk hidup di suatu ekosistem.",
     "definisi",
     "mudah",
   ),

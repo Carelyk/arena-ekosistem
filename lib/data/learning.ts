@@ -114,17 +114,10 @@ export interface EnergyStep {
   label: string;
   emoji: string;
   note: string;
-  role: OrganismRole | "matahari";
+  role: OrganismRole;
 }
 
 export const ENERGY_FLOW: EnergyStep[] = [
-  {
-    id: "matahari",
-    label: "Matahari",
-    emoji: "☀️",
-    note: "Sumber energi utama. Cahayanya ditangkap produsen.",
-    role: "matahari",
-  },
   {
     id: "rumput",
     label: "Rumput",
@@ -203,11 +196,11 @@ export interface CheckpointQuestion {
 export const CHECKPOINT_QUESTIONS: CheckpointQuestion[] = [
   {
     id: "cp1",
-    text: "Siapa yang menjadi awal rantai makanan pada contoh Matahari → Rumput → Belalang?",
+    text: "Siapa yang menjadi awal rantai makanan pada contoh Rumput → Belalang → Katak?",
     options: ["Rumput", "Belalang", "Matahari", "Pengurai"],
     correctIndex: 0,
     explanation:
-      "Rumput adalah produsen yang memanfaatkan energi cahaya Matahari melalui fotosintesis.",
+      "Rumput menjadi awal rantai makanan karena berperan sebagai produsen yang membuat makanan melalui fotosintesis.",
   },
   {
     id: "cp2",
