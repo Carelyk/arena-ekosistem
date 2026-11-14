@@ -97,20 +97,21 @@ export function deriveBadgeUnlocks(history: MatchRecord[]): BadgeUnlock[] {
       }
 
       if (record.detail.kind === "duel") {
-        const perfect =
-          record.detail.rounds > 0 &&
-          (record.detail.correctP1 === record.detail.rounds ||
-            record.detail.correctP2 === record.detail.rounds);
-        if (perfect) {
-          const player =
-            record.detail.correctP1 === record.detail.rounds ? p1 : p2;
-          if (!unlocks.has(`sempurna:${player}`)) {
-            unlocks.set(`sempurna:${player}`, {
-              id: "sempurna",
-              player,
-              unlockedAt: unlockAt,
-            });
-          }
+        const p1Perfect = record.detail.rounds > 0 && record.detail.correctP1 === record.detail.rounds;
+        const p2Perfect = record.detail.rounds > 0 && record.detail.correctP2 === record.detail.rounds;
+        if (p1Perfect && !unlocks.has(`sempurna:${p1}`)) {
+          unlocks.set(`sempurna:${p1}`, {
+            id: "sempurna",
+            player: p1,
+            unlockedAt: unlockAt,
+          });
+        }
+        if (p2Perfect && !unlocks.has(`sempurna:${p2}`)) {
+          unlocks.set(`sempurna:${p2}`, {
+            id: "sempurna",
+            player: p2,
+            unlockedAt: unlockAt,
+          });
         }
       }
     }

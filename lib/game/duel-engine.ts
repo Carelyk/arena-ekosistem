@@ -1,6 +1,8 @@
+import { loadQuestionBank } from "@/lib/data/question-bank";
 import { isUsableQuestion, toPublicQuestion } from "@/lib/data/questions";
 import { shuffle } from "@/lib/game/utils";
 import type {
+  CategoryId,
   EcoQuestion,
   OptionIndex,
   PublicQuestion,
@@ -251,9 +253,19 @@ export class DuelEngine {
   }
 }
 
-export function pickDuelQuestions(bank: EcoQuestion[], count = MAX_ROUNDS): EcoQuestion[] {
-  const usable = bank.filter(isUsableQuestion);
-  return shuffle(usable).slice(0, Math.min(count, usable.length));
+export function pickDuelQuestions(
+  difficulty: "mudah" | "sedang" | "sulit" | "campuran" = "campuran",
+  category: "all" | CategoryId = "all",
+  count = MAX_ROUNDS,
+): EcoQuestion[] {
+  const bank = loadQuestionBank().filter(isUsableQuestion);
+  const filtered = bank.filter((q: EcoQuestion) => {
+    if (difficulty !== "campuran" && q.difficulty !== difficulty) return false;
+    if (category !== "all" && q.category !== category) return false;
+    return true;
+  });
+  const source = filtered.length >= 3 ? filtered : bank;
+  return shuffle(source).slice(0, Math.min(count, source.length));
 }
 
 export function winnerOf(score1: number, score2: number): "p1" | "p2" | "draw" {

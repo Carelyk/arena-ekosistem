@@ -4,7 +4,6 @@ import {
   mergeBadgeUnlocks,
 } from "@/lib/data/badges";
 import { readJson, STORAGE_KEYS, writeJson } from "@/lib/storage";
-import { getSupabase, isSupabaseConfigured } from "@/lib/supabase";
 import type {
   BadgeUnlock,
   LeaderboardEntry,
@@ -53,144 +52,14 @@ export function syncBadgeUnlocks(history: MatchRecord[]): BadgeUnlock[] {
   return merged;
 }
 
-interface RemoteMatchRow {
-  id: string;
-  game: string;
-  player1_name: string;
-  player1_avatar: string;
-  score_p1: number;
-  player2_name: string;
-  player2_avatar: string;
-  score_p2: number;
-  winner: string;
-  detail: unknown;
-  created_at: string;
-}
-
-function toRecord(row: RemoteMatchRow): MatchRecord {
-  const detail =
-    row.detail && typeof row.detail === "object"
-      ? (row.detail as MatchRecord["detail"])
-      : row.game === "duel"
-        ? {
-            kind: "duel" as const,
-            rounds: 0,
-            correctP1: 0,
-            correctP2: 0,
-            answersP1: 0,
-            answersP2: 0,
-            fastestBonusP1: 0,
-            fastestBonusP2: 0,
-          }
-        : {
-            kind: "susun" as const,
-            ecosystem: "sawah" as const,
-            completedP1: false,
-            completedP2: false,
-            finishMsP1: null,
-            finishMsP2: null,
-            correctP1: 0,
-            correctP2: 0,
-          };
-
-  return {
-    id: row.id,
-    game: row.game === "susun" ? "susun" : "duel",
-    player1: {
-      name: row.player1_name,
-      avatar: row.player1_avatar,
-      score: Number(row.score_p1) || 0,
-    },
-    player2: {
-      name: row.player2_name,
-      avatar: row.player2_avatar,
-      score: Number(row.score_p2) || 0,
-    },
-    winner:
-      row.winner === "p1" || row.winner === "p2" || row.winner === "draw"
-        ? row.winner
-        : "draw",
-    createdAt: row.created_at,
-    detail,
-  };
-}
-
-async function withTimeout<T>(promise: PromiseLike<T>, ms: number): Promise<T | null> {
-  return await Promise.race([
-    Promise.resolve(promise),
-    new Promise<null>((resolve) => {
-      window.setTimeout(() => resolve(null), ms);
-    }),
-  ]);
-}
-
-/**
- * `null` means the remote read failed (offline, blocked, or the migration is not
- * applied), which is different from a reachable but empty leaderboard.
- */
-export async function fetchRemoteHistory(
-  limit = 100,
-): Promise<MatchRecord[] | null> {
-  const supabase = getSupabase();
-  if (!supabase) return null;
-  try {
-    const query = supabase
-      .from("eco_matches")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .limit(limit);
-    const result = await withTimeout(query, 5000);
-    if (!result || result.error || !Array.isArray(result.data)) return null;
-    return (result.data as RemoteMatchRow[]).map(toRecord);
-  } catch {
-    return null;
-  }
-}
-
-async function pushRemote(record: MatchRecord): Promise<void> {
-  const supabase = getSupabase();
-  if (!supabase) return;
-  try {
-    // The RPC validates the score/winner pair server-side before publishing the
-    // match to the shared leaderboard. Direct table inserts are not permitted.
-    await withTimeout(
-      supabase.rpc("eco_record_match", {
-        p_id: record.id,
-        p_game: record.game,
-        p_p1_name: record.player1.name,
-        p_p1_avatar: record.player1.avatar,
-        p_p1_score: record.player1.score,
-        p_p2_name: record.player2.name,
-        p_p2_avatar: record.player2.avatar,
-        p_p2_score: record.player2.score,
-        p_winner: record.winner,
-        p_detail: record.detail,
-        p_created_at: record.createdAt,
-      }),
-      5000,
-    );
-  } catch {
-    // Offline or migration not applied: the local record is already saved.
-  }
-}
-
-/**
- * Persist locally first, then best-effort to Supabase. Local storage is the
- * source of truth so a missing migration can never break gameplay.
- */
-export async function recordMatch(record: MatchRecord): Promise<BadgeUnlock[]> {
+export function recordMatch(record: MatchRecord): BadgeUnlock[] {
   const history = loadHistory();
   const next = [record, ...history.filter((item) => item.id !== record.id)].slice(
     0,
     MAX_HISTORY,
   );
   saveHistory(next);
-  const unlocks = syncBadgeUnlocks(next);
-  // The remote write is best-effort and must not delay the badge report: an
-  // unreachable Supabase project would otherwise leave the result screen
-  // showing "no new badges" forever.
-  void pushRemote(record);
-  return unlocks;
+  return syncBadgeUnlocks(next);
 }
 
 export interface MergedHistory {
@@ -198,19 +67,9 @@ export interface MergedHistory {
   online: boolean;
 }
 
-export async function loadMergedHistory(): Promise<MergedHistory> {
+export function loadMergedHistory(): MergedHistory {
   const local = loadHistory();
-  if (!isSupabaseConfigured) return { records: local, online: false };
-  const remote = await fetchRemoteHistory();
-  const byId = new Map<string, MatchRecord>();
-  for (const record of [...(remote ?? []), ...local]) {
-    byId.set(record.id, record);
-  }
-  const records = [...byId.values()].sort((a, b) =>
-    b.createdAt.localeCompare(a.createdAt),
-  );
-  // Only claim the shared leaderboard when the remote read actually succeeded.
-  return { records, online: remote !== null };
+  return { records: local, online: false };
 }
 
 export function buildLeaderboard(

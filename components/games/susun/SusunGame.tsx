@@ -121,20 +121,17 @@ export function SusunGame() {
       setPhase("result");
 
       const before = loadBadgeUnlocks();
-      void recordMatch(match)
-        .then((unlocks) => {
-          const fresh = unlocks.filter(
-            (unlock) =>
-              !before.some(
-                (existing) =>
-                  existing.id === unlock.id &&
-                  existing.player === unlock.player,
-              ),
-          );
-          setNewBadges(fresh);
-          if (fresh.length > 0) playSfx("badge-unlocked");
-        })
-        .catch(() => undefined);
+      const unlocks = recordMatch(match);
+      const fresh = unlocks.filter(
+        (unlock) =>
+          !before.some(
+            (existing) =>
+              existing.id === unlock.id &&
+              existing.player === unlock.player,
+          ),
+      );
+      setNewBadges(fresh);
+      if (fresh.length > 0) playSfx("badge-unlocked");
     },
     [playSfx, values],
   );

@@ -1,11 +1,12 @@
 "use client";
 
-import { Gamepad2, Info, MonitorSmartphone, Timer, Users } from "lucide-react";
+import { Gamepad2, Timer, Users, HelpCircle, Layers, Sliders } from "lucide-react";
 import { useState } from "react";
 import { useAudio } from "@/components/audio/AudioProvider";
 import { loadQuestionBank } from "@/lib/data/question-bank";
-import { isUsableQuestion } from "@/lib/data/questions";
-import { isSupabaseConfigured } from "@/lib/supabase";
+import { CATEGORY_LABELS, isUsableQuestion } from "@/lib/data/questions";
+import type { CategoryId } from "@/lib/types";
+import { GameTutorial } from "@/components/games/GameTutorial";
 
 export interface DuelSetupValues {
   player1Name: string;
@@ -14,7 +15,8 @@ export interface DuelSetupValues {
   player2Avatar: string;
   roundSeconds: number;
   mode: "individu" | "tim";
-  device: "local" | "room";
+  difficulty: "mudah" | "sedang" | "sulit" | "campuran";
+  category: "all" | CategoryId;
 }
 
 const AVATARS = ["🦁", "🐸", "🦅", "🐢", "🦊", "🐼", "🐯", "🦉", "🐬", "🐨"];
@@ -29,12 +31,14 @@ interface DuelSetupProps {
 
 export function DuelSetup({ bankCount, onStart, error }: DuelSetupProps) {
   const [mode, setMode] = useState<"individu" | "tim">("tim");
-  const [device, setDevice] = useState<"local" | "room">("local");
   const [player1Name, setPlayer1Name] = useState("Tim Hijau");
   const [player2Name, setPlayer2Name] = useState("Tim Oranye");
   const [player1Avatar, setPlayer1Avatar] = useState(AVATARS[0]);
   const [player2Avatar, setPlayer2Avatar] = useState(AVATARS[1]);
   const [roundSeconds, setRoundSeconds] = useState(30);
+  const [difficulty, setDifficulty] = useState<"mudah" | "sedang" | "sulit" | "campuran">("campuran");
+  const [category, setCategory] = useState<"all" | CategoryId>("all");
+  const [showTutorial, setShowTutorial] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
   const { playSfx } = useAudio();
 
@@ -85,7 +89,8 @@ export function DuelSetup({ bankCount, onStart, error }: DuelSetupProps) {
       player2Avatar,
       roundSeconds,
       mode,
-      device,
+      difficulty,
+      category,
     });
   }
 
@@ -97,11 +102,24 @@ export function DuelSetup({ bankCount, onStart, error }: DuelSetupProps) {
         <h1 className="font-display text-3xl font-semibold text-ink sm:text-4xl">
           Arena Duel Ekosistem
         </h1>
-        <p className="mt-2 text-sm font-semibold leading-relaxed text-ink-soft">
-          Dua pemain, satu soal, satu layar. Jawab lebih cepat dari lawan untuk
-          mendapat bonus, tetapi jawaban salah membuat panelmu dibekukan dua
-          detik.
-        </p>
+        <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
+          <p className="text-sm font-semibold leading-relaxed text-ink-soft">
+            Dua pemain, satu soal, satu layar. Jawab lebih cepat dari lawan untuk
+            mendapat bonus, tetapi jawaban salah membuat panelmu dibekukan dua
+            detik.
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              playSfx("button-click");
+              setShowTutorial(true);
+            }}
+            className="inline-flex min-h-11 items-center gap-1.5 rounded-xl border-[3px] border-ink/20 bg-sun/40 px-3 py-2 text-xs font-extrabold text-ink hover:bg-sun"
+          >
+            <HelpCircle className="h-4 w-4" />
+            Panduan Bermain
+          </button>
+        </div>
 
         <div className="mt-5 flex flex-wrap gap-2" role="group" aria-label="Mode bermain">
           <button
@@ -201,6 +219,80 @@ export function DuelSetup({ bankCount, onStart, error }: DuelSetupProps) {
 
         <fieldset className="mt-5">
           <legend className="flex items-center gap-2 text-sm font-extrabold text-ink">
+            <Sliders aria-hidden className="h-4 w-4" />
+            Tingkat kesulitan
+          </legend>
+          <div className="mt-2 grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {[
+              { id: "campuran" as const, label: "Campuran" },
+              { id: "mudah" as const, label: "Mudah" },
+              { id: "sedang" as const, label: "Sedang" },
+              { id: "sulit" as const, label: "Sulit" },
+            ].map((diff) => (
+              <button
+                key={diff.id}
+                type="button"
+                onClick={() => {
+                  setDifficulty(diff.id);
+                  playSfx("button-click");
+                }}
+                aria-pressed={difficulty === diff.id}
+                className={`min-h-11 rounded-xl border-[3px] px-3 py-2 text-sm font-extrabold ${
+                  difficulty === diff.id
+                    ? "border-ink bg-sun text-ink"
+                    : "border-ink/15 bg-cream text-ink-soft"
+                }`}
+              >
+                {diff.label}
+              </button>
+            ))}
+          </div>
+        </fieldset>
+
+        <fieldset className="mt-5">
+          <legend className="flex items-center gap-2 text-sm font-extrabold text-ink">
+            <Layers aria-hidden className="h-4 w-4" />
+            Kategori soal
+          </legend>
+          <div className="mt-2 flex flex-wrap gap-2 max-h-40 overflow-y-auto p-1">
+            <button
+              type="button"
+              onClick={() => {
+                setCategory("all");
+                playSfx("button-click");
+              }}
+              aria-pressed={category === "all"}
+              className={`min-h-10 rounded-xl border-[3px] px-3 py-1.5 text-xs font-extrabold ${
+                category === "all"
+                  ? "border-ink bg-sun text-ink"
+                  : "border-ink/15 bg-cream text-ink-soft"
+              }`}
+            >
+              Semua Kategori (Umum)
+            </button>
+            {Object.entries(CATEGORY_LABELS).map(([catId, label]) => (
+              <button
+                key={catId}
+                type="button"
+                onClick={() => {
+                  setCategory(catId as CategoryId);
+                  playSfx("button-click");
+                }}
+                aria-pressed={category === catId}
+                className={`min-h-10 rounded-xl border-[3px] px-3 py-1.5 text-xs font-extrabold ${
+                  category === catId
+                    ? "border-ink bg-sun text-ink"
+                    : "border-ink/15 bg-cream text-ink-soft"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </fieldset>
+
+        <fieldset className="mt-5">
+          <legend className="flex items-center gap-2 text-sm font-extrabold text-ink">
             <Timer aria-hidden className="h-4 w-4" />
             Durasi tiap soal
           </legend>
@@ -229,62 +321,6 @@ export function DuelSetup({ bankCount, onStart, error }: DuelSetupProps) {
           </p>
         </fieldset>
 
-        <fieldset className="mt-5">
-          <legend className="flex items-center gap-2 text-sm font-extrabold text-ink">
-            <MonitorSmartphone aria-hidden className="h-4 w-4" />
-            Cara bermain
-          </legend>
-          <div className="mt-2 flex flex-col gap-2 sm:flex-row">
-            <button
-              type="button"
-              onClick={() => {
-                setDevice("local");
-                playSfx("button-click");
-              }}
-              aria-pressed={device === "local"}
-              className={`flex min-h-11 flex-1 items-center gap-2 rounded-xl border-[3px] px-3 py-2 text-left text-sm font-extrabold ${
-                device === "local"
-                  ? "border-ink bg-sun text-ink"
-                  : "border-ink/15 bg-cream text-ink-soft"
-              }`}
-            >
-              <Gamepad2 aria-hidden className="h-4 w-4" />
-              Satu perangkat
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setDevice("room");
-                playSfx("button-click");
-              }}
-              aria-pressed={device === "room"}
-              className={`flex min-h-11 flex-1 items-center gap-2 rounded-xl border-[3px] px-3 py-2 text-left text-sm font-extrabold ${
-                device === "room"
-                  ? "border-ink bg-sun text-ink"
-                  : "border-ink/15 bg-cream text-ink-soft"
-              }`}
-            >
-              <MonitorSmartphone aria-hidden className="h-4 w-4" />
-              Kode ruangan
-            </button>
-          </div>
-        </fieldset>
-
-        {device === "room" && (
-          <div
-            className={`mt-3 flex items-start gap-2 rounded-xl border-[3px] px-3 py-2 text-xs font-bold leading-relaxed ${
-              isSupabaseConfigured
-                ? "border-[#2F7A45] bg-produsen-soft text-produsen-deep"
-                : "border-[#B98A0E] bg-[#FFF3CC] text-[#7A5A05]"
-            }`}
-          >
-            <Info aria-hidden className="mt-0.5 h-4 w-4 shrink-0" />
-            {isSupabaseConfigured
-              ? "Mode kode ruangan menggunakan Supabase Realtime. Buat ruangan, lalu bagikan kode enam karakter ke perangkat kedua."
-              : "Mode kode ruangan memerlukan Supabase. Tanpa konfigurasi, duel satu perangkat tetap bisa dimainkan penuh."}
-          </div>
-        )}
-
         {message && (
           <p
             role="alert"
@@ -301,13 +337,25 @@ export function DuelSetup({ bankCount, onStart, error }: DuelSetupProps) {
           className="sticker sticker-press mt-5 flex min-h-14 w-full items-center justify-center gap-2 rounded-2xl bg-sun px-5 py-3 font-display text-xl font-semibold text-ink disabled:opacity-50"
         >
           <Gamepad2 aria-hidden className="h-5 w-5" />
-          {device === "room" && isSupabaseConfigured
-            ? "Buat ruangan duel"
-            : "Mulai duel"}
+          Mulai Duel Ekosistem
         </button>
         <p className="mt-2 text-center text-xs font-semibold text-ink-soft">
           {bankCount} soal aktif dan sudah ditinjau tersedia di bank soal.
         </p>
+
+        {showTutorial && (
+          <GameTutorial
+            gameKey="duel"
+            title="Panduan Duel Ekosistem"
+            steps={[
+              { emoji: "⚔️", title: "Satu Perangkat 2 Pemain", desc: "Pemain 1 di sisi kiri, Pemain 2 di sisi kanan. Jawab soal yang sama secepat mungkin." },
+              { emoji: "⚡", title: "Poin & Bonus", desc: "Jawaban benar mendapat +100 poin, dan siapa yang paling cepat menjawab benar mendapat bonus +50 poin." },
+              { emoji: "❄️", title: "Hukuman Beku", desc: "Jika jawaban salah, panel pemain akan dibekukan selama 2 detik tidak bisa memilih jawaban." },
+              { emoji: "🪢", title: "Tali Tambang Energi", desc: "Pantau posisi dominasi skor melalui tali tambang energi di tengah layar." }
+            ]}
+            onClose={() => setShowTutorial(false)}
+          />
+        )}
       </section>
 
       <aside className="flex flex-col gap-4">

@@ -18,11 +18,9 @@ import { CONCLUSION_POINTS } from "@/lib/data/learning";
 import {
   badgesForPlayer,
   buildLeaderboard,
-  loadMergedHistory,
   loadHistory,
   syncBadgeUnlocks,
 } from "@/lib/game/history";
-import { isSupabaseConfigured } from "@/lib/supabase";
 import type {
   BadgeUnlock,
   LeaderboardEntry,
@@ -134,7 +132,6 @@ export default function JuaraPage() {
   const [unlocks, setUnlocks] = useState<BadgeUnlock[]>([]);
   const [filter, setFilter] = useState<LeaderboardFilter>("all");
   const [loading, setLoading] = useState(true);
-  const [source, setSource] = useState<"local" | "online">("local");
 
   useEffect(() => {
     let active = true;
@@ -142,25 +139,10 @@ export default function JuaraPage() {
     const timer = window.setTimeout(() => {
       const local = loadHistory();
       const localUnlocks = syncBadgeUnlocks(local);
+      if (!active) return;
       setHistory(local);
       setUnlocks(localUnlocks);
-
-      if (!isSupabaseConfigured) {
-        setLoading(false);
-        return;
-      }
-
-      void loadMergedHistory()
-        .then((merged) => {
-          if (!active) return;
-          setHistory(merged.records);
-          setUnlocks(syncBadgeUnlocks(merged.records));
-          setSource(merged.online ? "online" : "local");
-        })
-        .catch(() => undefined)
-        .finally(() => {
-          if (active) setLoading(false);
-        });
+      setLoading(false);
     }, 0);
 
     return () => {
@@ -191,9 +173,7 @@ export default function JuaraPage() {
           selesai otomatis tercatat di perangkat ini.
         </p>
         <p className="mt-2 text-xs font-bold text-ink-soft">
-          {source === "online"
-            ? "Sumber data: Supabase dan penyimpanan lokal."
-            : "Sumber data: penyimpanan lokal perangkat ini."}
+          Sumber data: penyimpanan lokal perangkat ini.
         </p>
       </header>
 

@@ -5,7 +5,6 @@ import { useAudio, useGameMusic } from "@/components/audio/AudioProvider";
 import { DuelBoard } from "@/components/games/duel/DuelBoard";
 import { DuelResult } from "@/components/games/duel/DuelResult";
 import { DuelSetup, type DuelSetupValues } from "@/components/games/duel/DuelSetup";
-import { RoomDuel } from "@/components/games/duel/RoomDuel";
 import { loadQuestionBank } from "@/lib/data/question-bank";
 import {
   DuelEngine,
@@ -19,7 +18,6 @@ import {
   recordMatch,
 } from "@/lib/game/history";
 import { createId } from "@/lib/storage";
-import { isSupabaseConfigured } from "@/lib/supabase";
 import type {
   BadgeUnlock,
   MatchRecord,
@@ -27,7 +25,7 @@ import type {
   PlayerInfo,
 } from "@/lib/types";
 
-type Screen = "setup" | "countdown" | "match" | "result" | "room";
+type Screen = "setup" | "countdown" | "match" | "result";
 
 export function DuelGame() {
   const [screen, setScreen] = useState<Screen>("setup");
@@ -49,7 +47,7 @@ export function DuelGame() {
   const savedRef = useRef(false);
   const warnedRoundRef = useRef(-1);
   const { playSfx } = useAudio();
-  useGameMusic(screen === "match" || screen === "countdown" || screen === "room");
+  useGameMusic(screen === "match" || screen === "countdown");
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -109,31 +107,27 @@ export function DuelGame() {
       playSfx("winner");
 
       const before = loadBadgeUnlocks();
-      void recordMatch(match)
-        .then((unlocks) => {
-          const fresh = unlocks.filter(
-            (unlock) =>
-              !before.some(
-                (existing) =>
-                  existing.id === unlock.id && existing.player === unlock.player,
-              ),
-          );
-          setNewBadges(fresh);
-          if (fresh.length > 0) playSfx("badge-unlocked");
-        })
-        .catch(() => undefined)
-        .finally(() => setSaving(false));
+      const unlocks = recordMatch(match);
+      const fresh = unlocks.filter(
+        (unlock) =>
+          !before.some(
+            (existing) =>
+              existing.id === unlock.id && existing.player === unlock.player,
+          ),
+      );
+      setNewBadges(fresh);
+      if (fresh.length > 0) playSfx("badge-unlocked");
+      setSaving(false);
     },
     [playSfx],
   );
 
   const startCountdown = useCallback(
     (values: DuelSetupValues) => {
-      const bank = loadQuestionBank();
-      const questions = pickDuelQuestions(bank, MAX_ROUNDS);
+      const questions = pickDuelQuestions(values.difficulty, values.category, MAX_ROUNDS);
       if (questions.length === 0) {
         setError(
-          "Belum ada soal aktif dan sudah ditinjau. Tambahkan soal di panel guru terlebih dahulu.",
+          "Tidak ada soal yang sesuai dengan filter kategori atau tingkat kesulitan tersebut. Coba ubah filter.",
         );
         return;
       }
@@ -160,18 +154,6 @@ export function DuelGame() {
   );
 
   function handleStart(values: DuelSetupValues) {
-    if (values.device === "room") {
-      if (!isSupabaseConfigured) {
-        setError(
-          "Mode kode ruangan memerlukan Supabase. Duel satu perangkat tetap bisa dimainkan.",
-        );
-        return;
-      }
-      setSetupValues(values);
-      setError(null);
-      setScreen("room");
-      return;
-    }
     startCountdown(values);
   }
 
@@ -330,17 +312,7 @@ export function DuelGame() {
     resetToSetup();
   }
 
-  if (screen === "room" && setupValues) {
-    return (
-      <RoomDuel
-        setup={setupValues}
-        onBack={() => {
-          setScreen("setup");
-          setSetupValues(null);
-        }}
-      />
-    );
-  }
+
 
   if (screen === "result" && record) {
     return (

@@ -29,7 +29,7 @@ const GAMES = [
     className: "bg-[#E4F3E2]",
     accent: "text-produsen-deep",
     border: "border-[#2F7A45]",
-    meta: ["Maksimal 10 soal", "20–45 detik per soal", "Satu perangkat atau kode ruangan"],
+    meta: ["Maksimal 10 soal", "20–45 detik per soal", "Dua pemain satu perangkat"],
   },
   {
     href: "/games/susun-cepat",
