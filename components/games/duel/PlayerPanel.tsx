@@ -1,9 +1,7 @@
 "use client";
 
-import { CheckCircle2, Snowflake, Lock, PauseCircle } from "lucide-react";
+import { CheckCircle2, CircleX, Lock, PauseCircle } from "lucide-react";
 import type { DuelPhase } from "@/lib/game/duel-engine";
-import { FREEZE_MS } from "@/lib/game/duel-engine";
-import { useNow } from "@/lib/hooks/use-now";
 import type { OptionIndex } from "@/lib/types";
 
 const OPTION_LETTERS = ["A", "B", "C", "D"] as const;
@@ -13,8 +11,8 @@ interface PlayerPanelProps {
   name: string;
   avatar: string;
   score: number;
+  attempted: boolean;
   solved: boolean;
-  frozenUntil: number;
   phase: DuelPhase;
   paused: boolean;
   onAnswer: (option: OptionIndex) => void;
@@ -42,23 +40,15 @@ export function PlayerPanel({
   name,
   avatar,
   score,
+  attempted,
   solved,
-  frozenUntil,
   phase,
   paused,
   onAnswer,
 }: PlayerPanelProps) {
   const styles = SIDE_STYLES[side];
-  // A shared clock hook keeps the freeze countdown honest without calling
-  // Date.now() during render (rejected as impure and as an unstable prerender).
-  const now = useNow(200);
-  const frozenMs = now > 0 ? Math.max(0, frozenUntil - now) : 0;
-  const frozen = frozenMs > 0;
-  // The local clock can lag the engine by one tick, which would otherwise show
-  // "3 seconds" for a 2-second freeze.
-  const frozenSeconds = Math.ceil(Math.min(FREEZE_MS, frozenMs) / 1000);
   const roundOpen = phase === "playing" && !paused;
-  const disabled = !roundOpen || solved || frozen;
+  const disabled = !roundOpen || attempted;
 
   return (
     <section
@@ -105,25 +95,25 @@ export function PlayerPanel({
         </div>
 
         <div className="min-h-[44px]" aria-live="polite">
-          {solved && phase !== "revealed" && (
+          {attempted && solved && phase !== "revealed" && (
             <p className="flex items-center gap-2 rounded-xl bg-white/80 px-2.5 py-2 text-xs font-extrabold text-ink">
               <CheckCircle2 aria-hidden className="h-4 w-4 text-duel-green" />
               Sudah benar. Panel dikunci untuk ronde ini.
             </p>
           )}
-          {!solved && frozen && phase === "playing" && (
-            <p className="flex items-center gap-2 rounded-xl border-2 border-[#5B9BD5] bg-white px-2.5 py-2 text-xs font-extrabold text-[#1F4F78]">
-              <Snowflake aria-hidden className="h-4 w-4" />
-              Dibekukan {frozenSeconds} detik. Lawan tetap bermain.
+          {attempted && !solved && phase !== "revealed" && (
+            <p className="flex items-center gap-2 rounded-xl border-2 border-[#B4567A] bg-white px-2.5 py-2 text-xs font-extrabold text-pengurai-deep">
+              <CircleX aria-hidden className="h-4 w-4" />
+              Jawaban terkunci. Tunggu lawan menyelesaikan ronde.
             </p>
           )}
-          {!solved && !frozen && paused && phase === "playing" && (
+          {!attempted && paused && phase === "playing" && (
             <p className="flex items-center gap-2 rounded-xl bg-white/80 px-2.5 py-2 text-xs font-extrabold text-ink">
               <PauseCircle aria-hidden className="h-4 w-4" />
               Permainan sedang dijeda.
             </p>
           )}
-          {!solved && !frozen && !paused && phase === "revealed" && (
+          {!attempted && !paused && phase === "revealed" && (
             <p className="flex items-center gap-2 rounded-xl bg-white/80 px-2.5 py-2 text-xs font-extrabold text-ink">
               <Lock aria-hidden className="h-4 w-4" />
               Ronde selesai.

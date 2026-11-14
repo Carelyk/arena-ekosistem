@@ -225,6 +225,82 @@
   animation: pulse-soft 1.1s ease-in-out infinite;
 }
 
+.role-art {
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes role-sway { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(3deg); } }
+@keyframes role-grow { from { transform: scaleY(0.35); opacity: 0.3; } to { transform: scaleY(1); opacity: 1; } }
+@keyframes role-sun-pulse { 0%, 100% { opacity: .65; transform: scale(.9); } 50% { opacity: 1; transform: scale(1.12); } }
+@keyframes role-hop { 0%, 65%, 100% { transform: translateY(0) rotate(0); } 35% { transform: translateY(-13px) rotate(-4deg); } }
+@keyframes role-leg-kick { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(8deg); } }
+@keyframes role-blink { 0%, 43%, 50%, 100% { transform: scaleY(1); } 46% { transform: scaleY(.08); } }
+@keyframes role-tongue { 0%, 58%, 100% { stroke-dashoffset: 48; } 68%, 82% { stroke-dashoffset: 0; } }
+@keyframes role-wing-left { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-12deg); } }
+@keyframes role-wing-right { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(12deg); } }
+@keyframes role-spore { 0% { opacity: 0; transform: translateY(8px); } 45% { opacity: 1; } 100% { opacity: 0; transform: translateY(-15px); } }
+@keyframes role-nutrient { to { stroke-dashoffset: -20; } }
+@keyframes ecosystem-pulse { 0%, 100% { opacity: .25; transform: scaleX(.25); } 50% { opacity: 1; transform: scaleX(1); } }
+@keyframes scene-swim { 0% { transform: translateX(-6px); } 50% { transform: translateX(7px) translateY(-2px); } 100% { transform: translateX(-6px); } }
+@keyframes scene-slither { 0%, 100% { transform: translateX(-3px) rotate(-3deg); } 50% { transform: translateX(5px) rotate(4deg); } }
+@keyframes scene-drift { 0%, 100% { transform: translateY(2px); } 50% { transform: translateY(-7px); } }
+
+.role-leaves { transform-origin: 59px 68px; animation: role-sway 2.2s ease-in-out infinite; }
+.role-roots, .role-mushroom { transform-origin: center bottom; animation: role-grow 1.1s ease-out both; }
+.role-sun { transform-origin: center; animation: role-sun-pulse 1.8s ease-in-out infinite; }
+.role-grasshopper { animation: role-hop 2.4s ease-in-out infinite; }
+.role-legs { transform-origin: 67px 48px; animation: role-leg-kick 1.2s ease-in-out infinite; }
+.role-frog-eyes { transform-origin: center; animation: role-blink 3.4s linear infinite; }
+.role-tongue { stroke-dasharray: 48; stroke-dashoffset: 48; animation: role-tongue 3.4s ease-in-out infinite; }
+.role-wing-left { transform-origin: 57px 45px; animation: role-wing-left 1.25s ease-in-out infinite; }
+.role-wing-right { transform-origin: 63px 45px; animation: role-wing-right 1.25s ease-in-out infinite; }
+.role-eagle { animation: scene-drift 2.4s ease-in-out infinite; }
+.role-spores { animation: role-spore 2.5s ease-out infinite; }
+.role-nutrients { animation: role-nutrient 1.2s linear infinite; }
+.role-complete-pop { animation: pop-in 320ms ease-out both; }
+.ecosystem-energy-pulse { transform-origin: left; animation: ecosystem-pulse 1.5s ease-in-out infinite; }
+.scene-plant { animation: role-sway 2.2s ease-in-out infinite; }
+.scene-hop { animation: role-hop 2.2s ease-in-out infinite; }
+.scene-frog { animation: scene-drift 1.7s ease-in-out infinite; }
+.scene-snake { animation: scene-slither 1.5s ease-in-out infinite; }
+.scene-eagle { animation: role-wing-left 1.8s ease-in-out infinite; }
+.scene-crawl { animation: scene-swim 3s ease-in-out infinite; }
+.scene-swim { animation: scene-swim 2.4s ease-in-out infinite; }
+.scene-plankton { animation: role-sun-pulse 1.8s ease-in-out infinite; }
+
+@keyframes role-example-enter { from { opacity: 0; transform: translateY(8px) scale(.92); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes eco-float { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-10px) rotate(2deg); } }
+@keyframes eco-bubble { from { transform: translateY(28px) scale(.7); opacity: 0; } 25% { opacity: .55; } to { transform: translateY(-150px) scale(1.15); opacity: 0; } }
+
+.role-example-sticker { animation: role-example-enter .38s both ease-out; }
+.eco-backdrop { pointer-events: none; position: absolute; inset: 0; overflow: hidden; opacity: .38; }
+.eco-backdrop span { position: absolute; display: block; }
+.eco-backdrop-sawah span { bottom: -18px; width: 16px; height: 92px; border-radius: 100% 0 100% 0; background: #61a864; transform-origin: bottom center; animation: role-sway 2.4s ease-in-out infinite alternate; }
+.eco-backdrop-sawah span:nth-child(1) { left: 5%; }
+.eco-backdrop-sawah span:nth-child(2) { left: 18%; height: 72px; animation-delay: .3s; }
+.eco-backdrop-sawah span:nth-child(3) { left: 34%; height: 105px; animation-delay: .6s; }
+.eco-backdrop-sawah span:nth-child(4) { right: 38%; height: 80px; animation-delay: .2s; }
+.eco-backdrop-sawah span:nth-child(5) { right: 24%; height: 110px; animation-delay: .7s; }
+.eco-backdrop-sawah span:nth-child(6) { right: 10%; height: 76px; animation-delay: .4s; }
+.eco-backdrop-sawah span:nth-child(7) { right: 2%; height: 96px; }
+.eco-backdrop-hutan span { bottom: -35px; width: 70px; height: 180px; border-radius: 60% 60% 12px 12px; background: linear-gradient(#2f7a45 0 55%, #75533c 56% 100%); animation: eco-float 5s ease-in-out infinite; }
+.eco-backdrop-hutan span:nth-child(1) { left: -2%; }
+.eco-backdrop-hutan span:nth-child(2) { left: 17%; height: 145px; animation-delay: .8s; }
+.eco-backdrop-hutan span:nth-child(3) { left: 38%; height: 165px; animation-delay: 1.4s; }
+.eco-backdrop-hutan span:nth-child(4) { right: 35%; height: 135px; animation-delay: .3s; }
+.eco-backdrop-hutan span:nth-child(5) { right: 18%; height: 175px; animation-delay: 1.1s; }
+.eco-backdrop-hutan span:nth-child(6) { right: -1%; height: 150px; animation-delay: .6s; }
+.eco-backdrop-hutan span:nth-child(7) { display: none; }
+.eco-backdrop-laut span { bottom: -20px; width: 18px; height: 18px; border: 3px solid white; border-radius: 999px; animation: eco-bubble 4.2s linear infinite; }
+.eco-backdrop-laut span:nth-child(1) { left: 8%; }
+.eco-backdrop-laut span:nth-child(2) { left: 22%; width: 10px; height: 10px; animation-delay: 1.1s; }
+.eco-backdrop-laut span:nth-child(3) { left: 42%; animation-delay: 2.3s; }
+.eco-backdrop-laut span:nth-child(4) { right: 42%; width: 12px; height: 12px; animation-delay: .5s; }
+.eco-backdrop-laut span:nth-child(5) { right: 25%; animation-delay: 1.7s; }
+.eco-backdrop-laut span:nth-child(6) { right: 12%; width: 9px; height: 9px; animation-delay: 2.8s; }
+.eco-backdrop-laut span:nth-child(7) { right: 3%; animation-delay: 3.4s; }
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -240,6 +316,35 @@
   .pulse-soft {
     transition: none;
     animation: none;
+  }
+
+  .role-leaves,
+  .role-roots,
+  .role-sun,
+  .role-grasshopper,
+  .role-legs,
+  .role-frog-eyes,
+  .role-tongue,
+  .role-wing-left,
+  .role-wing-right,
+  .role-eagle,
+  .role-mushroom,
+  .role-spores,
+  .role-nutrients,
+  .role-complete-pop,
+  .ecosystem-energy-pulse,
+  .scene-plant,
+  .scene-hop,
+  .scene-frog,
+  .scene-snake,
+  .scene-eagle,
+  .scene-crawl,
+  .scene-swim,
+  .scene-plankton,
+  .role-example-sticker,
+  .eco-backdrop span {
+    transition: none !important;
+    animation: none !important;
   }
 
   *,

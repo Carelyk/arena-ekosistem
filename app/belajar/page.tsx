@@ -9,9 +9,9 @@ import {
   Sun,
 } from "lucide-react";
 import { Checkpoint } from "@/components/learning/Checkpoint";
-import { EnergyFlow } from "@/components/learning/EnergyFlow";
+import { EcosystemLearningJourney } from "@/components/learning/EcosystemLearningJourney";
 import { FunFactPanel } from "@/components/learning/FunFactPanel";
-import { OrganismCard } from "@/components/learning/OrganismCard";
+import { RoleLearningSection } from "@/components/learning/RoleLearningSection";
 import { ORGANISM_CARDS } from "@/lib/data/learning";
 
 export const metadata: Metadata = {
@@ -129,31 +129,10 @@ export default function BelajarPage() {
               Ketuk kartu untuk membuka contoh, fungsi, dan fakta pentingnya.
             </p>
           </div>
-          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {ORGANISM_CARDS.map((card) => (
-              <li key={card.id} className="flex">
-                <div className="flex w-full">
-                  <OrganismCard card={card} />
-                </div>
-              </li>
-            ))}
-          </ul>
+          <RoleLearningSection cards={ORGANISM_CARDS} />
         </section>
 
-        <section aria-labelledby="aliran-heading" id="aliran">
-          <div className="mb-5">
-            <p className="text-xs font-extrabold uppercase tracking-widest text-konsumen2-deep">
-              Aliran energi
-            </p>
-            <h2
-              id="aliran-heading"
-              className="font-display text-3xl font-semibold text-ink sm:text-4xl"
-            >
-              Rumput → Belalang → Katak → Ular → Elang
-            </h2>
-          </div>
-          <EnergyFlow />
-        </section>
+        <EcosystemLearningJourney />
 
         <section aria-labelledby="tahukah-heading" id="tahukah">
           <h2 id="tahukah-heading" className="sr-only">

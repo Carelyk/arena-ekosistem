@@ -1,20 +1,22 @@
 import type { Metadata } from "next";
-import { Fredoka, Nunito } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { AudioProvider } from "@/components/audio/AudioProvider";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 
-const fredoka = Fredoka({
+const fredoka = localFont({
+  src: "../public/fonts/fredoka-latin.woff2",
   variable: "--font-fredoka",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: "400 700",
+  display: "swap",
 });
 
-const nunito = Nunito({
+const nunito = localFont({
+  src: "../public/fonts/nunito-latin.woff2",
   variable: "--font-nunito",
-  subsets: ["latin"],
-  weight: ["400", "600", "700", "800"],
+  weight: "400 800",
+  display: "swap",
 });
 
 export const metadata: Metadata = {

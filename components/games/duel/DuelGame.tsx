@@ -41,11 +41,13 @@ export function DuelGame() {
   const [saving, setSaving] = useState(false);
   const [bankCount, setBankCount] = useState(0);
   const [confirmExit, setConfirmExit] = useState(false);
+  const [ropeImpulse, setRopeImpulse] = useState<-1 | 0 | 1>(0);
 
   const engineRef = useRef<DuelEngine | null>(null);
   const playersRef = useRef<{ p1: PlayerInfo; p2: PlayerInfo } | null>(null);
   const savedRef = useRef(false);
   const warnedRoundRef = useRef(-1);
+  const ropeTimerRef = useRef<number | null>(null);
   const { playSfx } = useAudio();
   useGameMusic(screen === "match" || screen === "countdown");
 
@@ -56,6 +58,16 @@ export function DuelGame() {
     }, 0);
     return () => window.clearTimeout(timer);
   }, []);
+
+  useEffect(() => () => {
+    if (ropeTimerRef.current !== null) window.clearTimeout(ropeTimerRef.current);
+  }, []);
+
+  function kickRope(direction: -1 | 1) {
+    setRopeImpulse(direction);
+    if (ropeTimerRef.current !== null) window.clearTimeout(ropeTimerRef.current);
+    ropeTimerRef.current = window.setTimeout(() => setRopeImpulse(0), 420);
+  }
 
   // Rendering reads player info from state; the ref stays for callbacks that
   // need the latest value without being re-created on every render.
@@ -144,6 +156,7 @@ export function DuelGame() {
       setRecord(null);
       setNewBadges([]);
       setSnapshot(null);
+      setRopeImpulse(0);
       savedRef.current = false;
       warnedRoundRef.current = -1;
       setCountdown(3);
@@ -220,6 +233,7 @@ export function DuelGame() {
 
     switch (event.kind) {
       case "correct":
+        kickRope(player === 0 ? -1 : 1);
         playSfx("correct");
         if (event.bonus) {
           window.setTimeout(() => playSfx("fastest-bonus"), 160);
@@ -231,10 +245,14 @@ export function DuelGame() {
         );
         break;
       case "wrong":
+        kickRope(player === 0 ? 1 : -1);
         playSfx("wrong");
-        window.setTimeout(() => playSfx("freeze"), 150);
         setStatus(
-          `${name} menjawab salah. Panel dibekukan 2 detik. Lawan tetap bisa menjawab.`,
+          `${name} menjawab salah. Jawaban dikunci.${
+            next.phase === "revealed"
+              ? " Ronde selesai; pembahasan sudah dibuka."
+              : " Menunggu lawan menyelesaikan ronde."
+          }`,
         );
         break;
       case "frozen":
@@ -242,7 +260,7 @@ export function DuelGame() {
         setStatus(`${name} masih dibekukan. Tunggu dua detik.`);
         break;
       case "locked":
-        setStatus(`${name} sudah benar pada ronde ini.`);
+        setStatus(`${name} sudah memilih jawaban pada ronde ini.`);
         break;
       case "paused":
         setStatus("Permainan sedang dijeda.");
@@ -297,6 +315,7 @@ export function DuelGame() {
     playersRef.current = null;
     setScreen("setup");
     setSnapshot(null);
+    setRopeImpulse(0);
     setRecord(null);
     setNewBadges([]);
     setStatus(
@@ -366,6 +385,7 @@ export function DuelGame() {
           snapshot={snapshot}
           status={status}
           saving={saving}
+          ropeImpulse={ropeImpulse}
           onAnswer={handleAnswer}
           onNext={handleNext}
           onTogglePause={togglePause}

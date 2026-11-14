@@ -1,7 +1,7 @@
 "use client";
 
 import { Layers, Timer, Users } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAudio } from "@/components/audio/AudioProvider";
 import { ECOSYSTEMS } from "@/lib/data/ecosystems";
 import type { EcosystemId } from "@/lib/types";
@@ -31,6 +31,16 @@ export function SusunSetup({ onStart }: SusunSetupProps) {
   const [seconds, setSeconds] = useState(30);
   const [error, setError] = useState<string | null>(null);
   const { playSfx } = useAudio();
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      const eco = new URLSearchParams(window.location.search).get("ekosistem");
+      if (eco === "sawah" || eco === "hutan" || eco === "laut") {
+        setEcosystem(eco);
+      }
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   function submit() {
     const name1 = player1Name.trim();

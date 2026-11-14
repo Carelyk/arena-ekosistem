@@ -23,6 +23,8 @@ export interface DuelConfig {
 export interface DuelPlayerState {
   score: number;
   frozenUntil: number;
+  attempted: boolean;
+  selectedOption: OptionIndex | null;
   solved: boolean;
   wrongCount: number;
   correctCount: number;
@@ -62,6 +64,8 @@ function initialPlayer(): DuelPlayerState {
   return {
     score: 0,
     frozenUntil: 0,
+    attempted: false,
+    selectedOption: null,
     solved: false,
     wrongCount: 0,
     correctCount: 0,
@@ -119,6 +123,10 @@ export class DuelEngine {
     this.reveal = null;
     this.players[0].solved = false;
     this.players[1].solved = false;
+    this.players[0].attempted = false;
+    this.players[1].attempted = false;
+    this.players[0].selectedOption = null;
+    this.players[1].selectedOption = null;
     this.players[0].frozenUntil = 0;
     this.players[1].frozenUntil = 0;
   }
@@ -134,19 +142,23 @@ export class DuelEngine {
     }
 
     const state = this.players[player];
-    if (state.solved) return { kind: "locked" };
+    if (state.attempted) return { kind: "locked" };
     if (now < state.frozenUntil) {
       return { kind: "frozen", frozenUntil: state.frozenUntil };
     }
 
     state.answers += 1;
+    state.attempted = true;
+    state.selectedOption = option;
     const question = this.questions[this.roundIndex];
     const isCorrect = option === question.correctIndex;
 
     if (!isCorrect) {
-      state.frozenUntil = now + FREEZE_MS;
       state.wrongCount += 1;
-      return { kind: "wrong", frozenUntil: state.frozenUntil };
+      if (this.players[0].attempted && this.players[1].attempted) {
+        this.closeRound();
+      }
+      return { kind: "wrong", frozenUntil: 0 };
     }
 
     state.solved = true;
@@ -158,7 +170,7 @@ export class DuelEngine {
     }
     state.score += CORRECT_POINTS + (bonus ? FASTEST_BONUS : 0);
 
-    if (this.players[0].solved && this.players[1].solved) {
+    if (this.players[0].attempted && this.players[1].attempted) {
       this.closeRound();
     }
 

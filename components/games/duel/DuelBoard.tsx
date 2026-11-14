@@ -2,11 +2,11 @@
 
 import {
   CheckCircle2,
+  ArrowRight,
   Clock,
   LogOut,
   Pause,
   Play,
-  RotateCcw,
   Sparkles,
 } from "lucide-react";
 import { EnergyRope } from "@/components/games/duel/EnergyRope";
@@ -21,6 +21,7 @@ interface DuelBoardProps {
   snapshot: DuelSnapshot;
   status: string;
   saving: boolean;
+  ropeImpulse: -1 | 0 | 1;
   onAnswer: (player: 0 | 1, option: OptionIndex) => void;
   onNext: () => void;
   onTogglePause: () => void;
@@ -35,6 +36,7 @@ export function DuelBoard({
   snapshot,
   status,
   saving,
+  ropeImpulse,
   onAnswer,
   onNext,
   onTogglePause,
@@ -80,6 +82,7 @@ export function DuelBoard({
         name2={player2.name}
         score1={players[0].score}
         score2={players[1].score}
+        impulse={ropeImpulse}
       />
 
       <p
@@ -96,8 +99,8 @@ export function DuelBoard({
             name={player1.name}
             avatar={player1.avatar}
             score={players[0].score}
+            attempted={players[0].attempted}
             solved={players[0].solved}
-            frozenUntil={players[0].frozenUntil}
             phase={phase}
             paused={paused}
             onAnswer={(option) => onAnswer(0, option)}
@@ -192,7 +195,7 @@ export function DuelBoard({
                         : "bg-white text-ink-soft"
                     }`}
                   >
-                    {player1.name}: {reveal.solved[0] ? "benar" : "belum benar"}
+                    {player1.name}: {reveal.solved[0] ? "benar" : players[0].attempted ? "salah" : "belum menjawab"}
                   </span>
                   <span
                     className={`rounded-lg px-2 py-1 ${
@@ -201,7 +204,7 @@ export function DuelBoard({
                         : "bg-white text-ink-soft"
                     }`}
                   >
-                    {player2.name}: {reveal.solved[1] ? "benar" : "belum benar"}
+                    {player2.name}: {reveal.solved[1] ? "benar" : players[1].attempted ? "salah" : "belum menjawab"}
                   </span>
                   {reveal.firstSolver !== null && (
                     <span className="rounded-lg bg-sun px-2 py-1 text-ink">
@@ -222,7 +225,7 @@ export function DuelBoard({
                 className="sticker sticker-press flex min-h-11 items-center gap-2 rounded-xl bg-sun px-4 py-2 text-sm font-extrabold text-ink disabled:opacity-50"
               >
                 {lastRound ? "Lihat hasil" : "Ronde berikutnya"}
-                <RotateCcw aria-hidden className="h-4 w-4" />
+                <ArrowRight aria-hidden className="h-4 w-4" />
               </button>
             </div>
           )}
@@ -234,8 +237,8 @@ export function DuelBoard({
             name={player2.name}
             avatar={player2.avatar}
             score={players[1].score}
+            attempted={players[1].attempted}
             solved={players[1].solved}
-            frozenUntil={players[1].frozenUntil}
             phase={phase}
             paused={paused}
             onAnswer={(option) => onAnswer(1, option)}

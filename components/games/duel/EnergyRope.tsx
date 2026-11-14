@@ -8,11 +8,14 @@ interface EnergyRopeProps {
   name2: string;
   score1: number;
   score2: number;
+  /** -1 menarik sesaat ke kiri, 1 menarik sesaat ke kanan. */
+  impulse: -1 | 0 | 1;
 }
 
-export function EnergyRope({ name1, name2, score1, score2 }: EnergyRopeProps) {
+export function EnergyRope({ name1, name2, score1, score2, impulse }: EnergyRopeProps) {
   const diff = score1 - score2;
-  const position = 50 + clamp((diff / 600) * 45, -45, 45);
+  const scorePosition = 50 - clamp((diff / 600) * 40, -40, 40);
+  const position = clamp(scorePosition + impulse * 7, 5, 95);
   const leading = diff === 0 ? null : diff > 0 ? name1 : name2;
   const summary =
     diff === 0
