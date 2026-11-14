@@ -1,4 +1,4 @@
-# Arena Ekosistem - Harmoni dalam Ekosistem
+# Arena Ekosistem — Harmoni dalam Ekosistem
 
 A learning and competitive-game site for Grade 6 IPAS (Chapter 2, *Harmoni dalam
 Ekosistem*). Two players share one screen, answer the same questions, and race to
@@ -13,7 +13,7 @@ icons, and an optional Supabase backend for room-code duels and shared history.
 | Route | What it does |
 | --- | --- |
 | `/` | Landing page: chapter framing, quick links to the three main areas. |
-| `/belajar` | Chapter badge, "Rantai Makanan" explainer, five organism cards (produsen, konsumen I-II, konsumen puncak, pengurai), the energy flow `Matahari  Rumput  Belalang  Katak  Ular  Elang`, arrow-direction note, "Tahukah Kamu?" panel, and five checkpoint questions. |
+| `/belajar` | Chapter badge, "Rantai Makanan" explainer, five organism cards (produsen, konsumen I–II, konsumen puncak, pengurai), the energy flow `Matahari → Rumput → Belalang → Katak → Ular → Elang`, arrow-direction note, "Tahukah Kamu?" panel, and five checkpoint questions. |
 | `/games` | Game hub: Duel Ekosistem, Susun Cepat, and pre-game tips. |
 | `/arena` | Duel 1 vs 1: setup (names, avatars, one-device or room code, round length), countdown, split board, energy rope, pause/resume/exit, reveal, result, replay. |
 | `/games/susun-cepat` | Drag-and-drop food-chain builder with independent boards for both players across sawah, hutan, and laut. |
@@ -30,7 +30,7 @@ in the header.
 
 - Both players receive the same question order, at most 10 non-repeating items
   drawn from the active + reviewed question bank.
-- A-D answer pads on each side. Correct answer: **+100**. The first correct answer
+- A–D answer pads on each side. Correct answer: **+100**. The first correct answer
   in a round also earns **+50**.
 - A wrong answer freezes only that panel for **2 seconds**; the opponent keeps
   playing. A correct answer locks that panel for the rest of the round.
@@ -51,9 +51,9 @@ in the header.
   **2 seconds** with a shake; a full solve gets a glow and confetti.
 - **100 points** per correct position, **+250** for the first player to finish.
   Default round length is 30 seconds.
-- Chains: Sawah (`Padi  Belalang  Katak  Ular  Elang`), Hutan
-  (`Tumbuhan/Daun  Ulat  Burung Pemakan Serangga  Elang`), Laut
-  (`Fitoplankton  Zooplankton  Ikan Kecil  Ikan Besar  Hiu`). Decomposers are
+- Chains: Sawah (`Padi → Belalang → Katak → Ular → Elang`), Hutan
+  (`Tumbuhan/Daun → Ulat → Burung Pemakan Serangga → Elang`), Laut
+  (`Fitoplankton → Zooplankton → Ikan Kecil → Ikan Besar → Hiu`). Decomposers are
   an extra slot after the chain and are explained as recyclers of matter, not a
   trophic level that receives energy from the Sun.
 
@@ -124,12 +124,12 @@ supabase db push
 The migration is idempotent (`if not exists`, `create or replace`, seeded rows use
 `on conflict do nothing`) and creates:
 
-- `eco_questions` - 32 seeded questions with answers, review, and active flags.
-- `eco_rooms`, `eco_room_players` - authoritative room state and per-player scores.
-- `eco_match_answers` - per-answer audit trail used for the recorded result.
-- `eco_matches` - match history read by `/juara`.
-- `eco_drag_challenges` - server-side chain solutions for future validation.
-- `eco_leaderboard`, `eco_player_badges` - aggregate scoreboard and badge storage.
+- `eco_questions` — 32 seeded questions with answers, review, and active flags.
+- `eco_rooms`, `eco_room_players` — authoritative room state and per-player scores.
+- `eco_match_answers` — per-answer audit trail used for the recorded result.
+- `eco_matches` — match history read by `/juara`.
+- `eco_drag_challenges` — server-side chain solutions for future validation.
+- `eco_leaderboard`, `eco_player_badges` — aggregate scoreboard and badge storage.
 - RPCs: `eco_create_room`, `eco_join_room`, `eco_room_state`, `eco_start_room`,
   `eco_submit_room_answer`, `eco_next_room_round`, `eco_record_match`, plus the
   internal `eco_room_payload`, `eco_room_tick`, `eco_close_round`, and
@@ -201,4 +201,3 @@ settings dialog persists mute plus master, music, and SFX volumes.
 4. Deploy, then run the migration once against the Supabase project.
 
 No deployment URL is recorded here because none has been verified.
-
