@@ -1,12 +1,13 @@
 "use client";
 
-import { ArrowRight, ChevronRight, Pause, Play, RotateCcw, Sparkles } from "lucide-react";
+import { ArrowRight, ChevronRight, Pause, Play, RotateCcw, Sparkles, Volume2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { useAudio } from "@/components/audio/AudioProvider";
 import { useReducedMotion } from "@/lib/hooks/use-reduced-motion";
 import { ECOSYSTEMS } from "@/lib/data/ecosystems";
 import type { EcosystemId } from "@/lib/types";
+import { LEARNING_SOUND_BY_ORGANISM } from "@/lib/audio/learning-sounds";
 
 const SCENE_CLASS: Record<string, string> = {
   padi: "scene-plant", belalang: "scene-hop", katak: "scene-frog", ular: "scene-snake", elang: "scene-eagle",
@@ -35,7 +36,7 @@ export function EcosystemExplorer({ activeEcosystem, onEcosystemChange }: Ecosys
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const reducedMotion = useReducedMotion();
-  const { playSfx } = useAudio();
+  const { playSfx, playLearningSound } = useAudio();
   const currentEco = ECOSYSTEMS.find((eco) => eco.id === activeTab) ?? ECOSYSTEMS[0];
 
   function selectTab(id: EcosystemId) {
@@ -131,10 +132,11 @@ export function EcosystemExplorer({ activeEcosystem, onEcosystemChange }: Ecosys
             const active = index === activeStepIndex;
             return (
               <li key={step.id} className="flex items-center gap-3">
-                <button type="button" onClick={() => { setSelectedIndex(index); setActiveStepIndex(index); setIsPlaying(false); playSfx("button-click"); }} aria-pressed={selectedIndex === index} className={`sticker sticker-press flex min-w-[106px] flex-col items-center gap-1.5 rounded-2xl border-[3px] bg-white p-3 text-center transition-transform ${active ? "scale-105 border-ink ring-4 ring-sun/70" : "border-ink/20"}`}>
+                <button data-no-click-sfx type="button" onClick={() => { setSelectedIndex(index); setActiveStepIndex(index); setIsPlaying(false); playLearningSound(LEARNING_SOUND_BY_ORGANISM[step.id] ?? "plant"); }} aria-pressed={selectedIndex === index} className={`sticker sticker-press flex min-w-[106px] flex-col items-center gap-1.5 rounded-2xl border-[3px] bg-white p-3 text-center transition-transform ${active ? "scale-105 border-ink ring-4 ring-sun/70" : "border-ink/20"}`}>
                   <span className={`text-4xl ${!reducedMotion ? SCENE_CLASS[step.id] ?? "scene-drift" : ""}`} aria-hidden>{step.emoji}</span>
                   <span className="font-display text-xs font-semibold text-ink">{step.label}</span>
                   <span className="text-[10px] font-extrabold uppercase tracking-wide text-ink-soft">{step.role}</span>
+                  <span className="inline-flex items-center gap-1 text-[9px] font-bold text-ink-soft"><Volume2 className="h-3 w-3" aria-hidden /> Dengar</span>
                 </button>
                 {index < currentEco.steps.length - 1 && <span className="relative flex h-6 w-8 items-center" aria-hidden><ArrowRight className="h-5 w-5 text-ink/45" /><span className={`ecosystem-energy-pulse absolute bottom-0 left-0 h-1 w-full rounded-full bg-sun ${active && !reducedMotion ? "" : "hidden"}`} /></span>}
               </li>
@@ -154,6 +156,7 @@ export function EcosystemExplorer({ activeEcosystem, onEcosystemChange }: Ecosys
         <div className="mt-5 rounded-2xl border-2 border-dashed border-ink/20 bg-white/80 p-4">
           <div className="flex items-center gap-2"><span className="text-2xl" aria-hidden>{currentEco.decomposer.emoji}</span><h3 className="font-display text-sm font-semibold">Pengurai bekerja pada semua tingkat</h3></div>
           <p className="mt-1 text-xs font-semibold leading-relaxed text-ink/85">{currentEco.decomposerNote}</p>
+          <button data-no-click-sfx type="button" onClick={() => playLearningSound("decomposer")} className="mt-3 inline-flex min-h-9 items-center gap-1.5 rounded-xl border-2 border-pengurai bg-pengurai-soft px-3 py-1.5 text-xs font-extrabold text-pengurai-deep"><Volume2 className="h-3.5 w-3.5" aria-hidden /> Dengar suara pengurai</button>
         </div>
         <div className="mt-6 flex justify-end"><Link href={`/games/susun-cepat?ekosistem=${activeTab}`} className="sticker sticker-press inline-flex min-h-12 items-center gap-2 rounded-2xl bg-sun px-5 py-3 font-display text-base font-semibold text-ink"><span>Coba Susun Rantai Ini</span><ChevronRight className="h-5 w-5" /></Link></div>
       </div>

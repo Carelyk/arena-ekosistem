@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Info, Pause, Play, RotateCcw, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowRight, Info, Pause, Play, RotateCcw, ChevronLeft, ChevronRight, Volume2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAudio } from "@/components/audio/AudioProvider";
 import { useReducedMotion } from "@/lib/hooks/use-reduced-motion";
@@ -9,6 +9,7 @@ import {
 } from "@/lib/data/learning";
 import { getEcosystem } from "@/lib/data/ecosystems";
 import type { ChainStep, EcosystemId } from "@/lib/types";
+import { LEARNING_SOUND_BY_ORGANISM } from "@/lib/audio/learning-sounds";
 
 const ROLE_STYLES: Record<ChainStep["role"], string> = {
   produsen: "bg-produsen-soft text-produsen-deep border-produsen",
@@ -45,7 +46,7 @@ export function EnergyFlow({ ecosystemId = "sawah" }: { ecosystemId?: EcosystemI
   const [decomposerStep, setDecomposerStep] = useState(0);
   const [decomposerPlaying, setDecomposerPlaying] = useState(true);
   const reducedMotion = useReducedMotion();
-  const { playSfx } = useAudio();
+  const { playSfx, playLearningSound } = useAudio();
 
   const activeIndex = flow.findIndex((step) => step.id === activeId);
   const active = flow[activeIndex >= 0 ? activeIndex : 0] ?? flow[0];
@@ -56,11 +57,13 @@ export function EnergyFlow({ ecosystemId = "sawah" }: { ecosystemId?: EcosystemI
       setActiveId((current) => {
         const idx = flow.findIndex((s) => s.id === current);
         const nextIdx = (idx + 1) % flow.length;
-        return flow[nextIdx].id;
+        const nextId = flow[nextIdx].id;
+        playLearningSound(LEARNING_SOUND_BY_ORGANISM[nextId] ?? "plant");
+        return nextId;
       });
     }, 2500);
     return () => window.clearInterval(timer);
-  }, [isPlaying, reducedMotion, flow]);
+  }, [isPlaying, reducedMotion, flow, playLearningSound]);
 
   useEffect(() => {
     if (!decomposerPlaying || reducedMotion) return;
@@ -75,7 +78,9 @@ export function EnergyFlow({ ecosystemId = "sawah" }: { ecosystemId?: EcosystemI
     setActiveId((current) => {
       const idx = flow.findIndex((s) => s.id === current);
       const prevIdx = (idx - 1 + flow.length) % flow.length;
-      return flow[prevIdx].id;
+      const nextId = flow[prevIdx].id;
+      playLearningSound(LEARNING_SOUND_BY_ORGANISM[nextId] ?? "plant");
+      return nextId;
     });
   }
 
@@ -84,7 +89,9 @@ export function EnergyFlow({ ecosystemId = "sawah" }: { ecosystemId?: EcosystemI
     setActiveId((current) => {
       const idx = flow.findIndex((s) => s.id === current);
       const nextIdx = (idx + 1) % flow.length;
-      return flow[nextIdx].id;
+      const nextId = flow[nextIdx].id;
+      playLearningSound(LEARNING_SOUND_BY_ORGANISM[nextId] ?? "plant");
+      return nextId;
     });
   }
 
@@ -109,6 +116,7 @@ export function EnergyFlow({ ecosystemId = "sawah" }: { ecosystemId?: EcosystemI
               onClick={() => {
                 setIsPlaying((p) => !p);
                 playSfx("button-click");
+                playLearningSound(LEARNING_SOUND_BY_ORGANISM[activeId] ?? "plant");
               }}
               disabled={reducedMotion}
               className="sticker sticker-press inline-flex min-h-10 items-center gap-1.5 rounded-xl border-[3px] border-ink/20 bg-sun px-3.5 py-1.5 text-xs font-extrabold text-ink disabled:opacity-50"
@@ -149,8 +157,9 @@ export function EnergyFlow({ ecosystemId = "sawah" }: { ecosystemId?: EcosystemI
                   onClick={() => {
                     setActiveId(step.id);
                     setIsPlaying(false);
-                    playSfx("button-click");
+                    playLearningSound(LEARNING_SOUND_BY_ORGANISM[step.id] ?? "plant");
                   }}
+                  data-no-click-sfx
                   aria-pressed={selected}
                   className={`sticker sticker-press flex min-h-[104px] w-[112px] flex-col items-center justify-center gap-1.5 rounded-2xl border-[3px] px-2.5 py-3 text-center transition-all ${
                     ROLE_STYLES[step.role]
@@ -167,6 +176,7 @@ export function EnergyFlow({ ecosystemId = "sawah" }: { ecosystemId?: EcosystemI
                   <span className="text-[10px] font-bold uppercase tracking-wide opacity-80">
                     {step.role}
                   </span>
+                  <span className="inline-flex items-center gap-1 text-[9px] font-bold opacity-75"><Volume2 className="h-3 w-3" aria-hidden /> Dengar</span>
                 </button>
                 {index < flow.length - 1 && (
                   <ArrowRight

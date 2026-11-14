@@ -20,11 +20,16 @@ import {
   type SoundManager,
 } from "@/lib/audio/sound-manager";
 import type { AudioPreferences } from "@/lib/types";
+import {
+  playLearningSound as playLearningSoundEffect,
+  type LearningSoundName,
+} from "@/lib/audio/learning-sounds";
 
 interface AudioContextValue {
   preferences: AudioPreferences;
   unlocked: boolean;
   playSfx: (name: SfxName) => void;
+  playLearningSound: (name: LearningSoundName) => void;
   updatePreferences: (patch: Partial<AudioPreferences>) => void;
   resetPreferences: () => void;
   requestMusic: (enabled: boolean) => void;
@@ -34,6 +39,7 @@ const fallback: AudioContextValue = {
   preferences: DEFAULT_AUDIO_PREFERENCES,
   unlocked: false,
   playSfx: () => undefined,
+  playLearningSound: () => undefined,
   updatePreferences: () => undefined,
   resetPreferences: () => undefined,
   requestMusic: () => undefined,
@@ -110,6 +116,12 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     manager.play(name);
   }, []);
 
+  const playLearningSound = useCallback((name: LearningSoundName) => {
+    const prefs = preferencesRef.current;
+    if (prefs.muted) return;
+    playLearningSoundEffect(name, prefs.master * prefs.sfx);
+  }, []);
+
   const updatePreferences = useCallback((patch: Partial<AudioPreferences>) => {
     const next: AudioPreferences = {
       ...preferencesRef.current,
@@ -157,6 +169,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
         preferences,
         unlocked,
         playSfx,
+        playLearningSound,
         updatePreferences,
         resetPreferences,
         requestMusic,

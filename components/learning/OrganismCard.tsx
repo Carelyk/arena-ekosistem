@@ -1,19 +1,11 @@
 "use client";
 
-import { ArrowRight, CheckCircle2, ChevronDown } from "lucide-react";
+import { ArrowRight, CheckCircle2, ChevronDown, Volume2 } from "lucide-react";
 import { useId, useState } from "react";
 import { useAudio } from "@/components/audio/AudioProvider";
 import { RoleIllustration } from "@/components/learning/RoleIllustration";
-import type { SfxName } from "@/lib/audio/sound-manager";
 import type { OrganismCard as OrganismCardData } from "@/lib/data/learning";
-
-const ROLE_SOUNDS: Record<string, SfxName> = {
-  produsen: "card-pickup",
-  konsumen1: "card-drop",
-  konsumen2: "correct",
-  puncak: "fastest-bonus",
-  pengurai: "card-return",
-};
+import { LEARNING_SOUND_BY_ORGANISM } from "@/lib/audio/learning-sounds";
 
 export function OrganismCard({ card, learned, onLearned }: {
   card: OrganismCardData;
@@ -22,12 +14,12 @@ export function OrganismCard({ card, learned, onLearned }: {
 }) {
   const [open, setOpen] = useState(false);
   const detailId = useId();
-  const { playSfx } = useAudio();
+  const { playLearningSound } = useAudio();
 
   function handleToggle() {
     const nextOpen = !open;
     setOpen(nextOpen);
-    playSfx(ROLE_SOUNDS[card.id] ?? "button-click");
+    playLearningSound(LEARNING_SOUND_BY_ORGANISM[card.id] ?? "plant");
     if (nextOpen && !learned) onLearned();
   }
 
@@ -51,6 +43,9 @@ export function OrganismCard({ card, learned, onLearned }: {
         <div>
           <h3 className={`font-display text-xl font-semibold ${card.textClass}`}>{card.name}</h3>
           <p className="text-sm font-bold text-ink-soft">{card.tagline}</p>
+          <p className="mt-1 inline-flex items-center gap-1 text-[10px] font-extrabold uppercase tracking-wide text-ink-soft">
+            <Volume2 className="h-3 w-3" aria-hidden /> Ketuk untuk mendengar
+          </p>
         </div>
         <p className="line-clamp-3 text-sm font-semibold leading-relaxed text-ink/80">{card.summary}</p>
         <span className={`inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wide ${card.textClass}`}>
