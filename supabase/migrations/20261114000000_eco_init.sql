@@ -907,15 +907,15 @@ $$;
 -- The 32 questions below match lib/data/questions.ts after the deterministic
 -- option rotation applied by seedBank(), so the correct answer is not always A.
 insert into public.eco_questions (
-  id, prompt, options, correct_index, explanation, category, difficulty, reviewed, active, origin
+  id, prompt, options, correct_index, explanation, category, difficulty
 )
 values
   (
     'q01',
     'Rantai makanan adalah ...',
-    array['kumpulan hewan yang hidup di satu tempat', 'proses tumbuhan membuat makanan', 'hubungan antara manusia dan hewan peliharaan', 'peristiwa makan dan dimakan dengan arah tertentu'],
+    array['kumpulan hewan yang hidup di satu tempat', 'proses tumbuhan membuat makanan', 'hubungan antara manusia dan hewan peliharaan', 'proses perpindahan energi dan nutrisi antar makhluk hidup di suatu ekosistem'],
     3,
-    'Rantai makanan adalah peristiwa makan dan dimakan yang membentuk urutan perpindahan energi.',
+    'Rantai makanan adalah proses perpindahan energi dan nutrisi antar makhluk hidup di suatu ekosistem.',
     'definisi',
     'mudah'
   ),
@@ -1199,6 +1199,14 @@ values
     'sedang'
   )
 on conflict (id) do nothing;
+
+-- Seed questions must be immediately available to the game. These columns are
+-- omitted from the VALUES tuples above so every tuple has the same seven fields.
+update public.eco_questions
+set reviewed = true,
+    active = true,
+    origin = 'seed'
+where id ~ '^q(0[1-9]|[12][0-9]|3[0-2])$';
 
 insert into public.eco_drag_challenges (id, ecosystem, prompt, solution)
 values
