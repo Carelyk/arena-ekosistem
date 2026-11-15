@@ -8,6 +8,7 @@ import {
   Users,
   Zap,
 } from "lucide-react";
+import { HeroEasterEggs } from "@/components/home/HeroEasterEggs";
 
 const TABS = [
   {
@@ -109,9 +110,10 @@ export default function HomePage() {
         </div>
 
         <div className="relative mx-auto w-full max-w-md">
+          <HeroEasterEggs />
           <div
             aria-hidden
-            className="float-soft absolute -left-1 -top-4 z-10 flex h-16 w-16 items-center justify-center rounded-2xl border-[3px] border-ink bg-sun text-3xl"
+            className="hidden"
           >
             ☀️
           </div>
@@ -156,7 +158,7 @@ export default function HomePage() {
           </div>
           <div
             aria-hidden
-            className="absolute -bottom-4 -right-2 z-10 flex h-14 w-14 rotate-6 items-center justify-center rounded-2xl border-[3px] border-ink bg-pengurai-soft text-2xl"
+            className="hidden"
           >
             🍄
           </div>

@@ -99,6 +99,20 @@
   box-shadow: 0 2px 0 0 rgb(46 42 38 / 0.08);
 }
 
+.hero-easter-egg-sun {
+  width: 4rem;
+  height: 4rem;
+  background: #ffc94a;
+  animation: float-soft 3.4s ease-in-out infinite;
+}
+
+.hero-easter-egg-mushroom {
+  width: 3.5rem;
+  height: 3.5rem;
+  background: #fbe4ec;
+  animation: float-soft 3.8s ease-in-out infinite reverse;
+}
+
 .soft-card {
   border: 3px solid rgb(46 42 38 / 0.12);
   box-shadow: 0 10px 24px -20px rgb(46 42 38 / 0.5);
@@ -342,6 +356,8 @@
   .shake,
   .glow-correct,
   .float-soft,
+  .hero-easter-egg-sun,
+  .hero-easter-egg-mushroom,
   .pulse-soft {
     transition: none;
     animation: none;
