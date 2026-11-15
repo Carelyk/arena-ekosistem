@@ -133,7 +133,7 @@ export function EcosystemExplorer({ activeEcosystem, onEcosystemChange }: Ecosys
           </div>
         </div>
 
-        <ol className="relative mt-7 flex flex-wrap items-center gap-3" aria-live="polite">
+        <ol className="relative mx-auto mt-7 flex w-full flex-wrap items-center justify-center gap-3" aria-live="polite">
           {currentEco.steps.map((step, index) => {
             const active = index === activeStepIndex;
             return (

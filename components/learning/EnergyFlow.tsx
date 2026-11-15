@@ -153,7 +153,7 @@ export function EnergyFlow({ ecosystemId = "sawah" }: { ecosystemId?: EcosystemI
           </div>
         </div>
 
-        <ol className="no-scrollbar flex items-stretch gap-3 overflow-x-auto pb-3">
+        <ol className="no-scrollbar flex scroll-px-3 items-stretch gap-3 overflow-x-auto px-3 pb-4 pt-3 lg:justify-center">
           {flow.map((step, index) => {
             const selected = step.id === activeId;
             return (
