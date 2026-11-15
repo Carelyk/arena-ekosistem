@@ -44,7 +44,7 @@ export default function BelajarPage() {
             <p className="mt-3 text-base font-extrabold text-ink sm:text-lg">
               “Rantai makanan adalah proses perpindahan energi dan nutrisi antar makhluk hidup di suatu ekosistem.”
             </p>
-            <p className="mt-3 max-w-xl text-sm font-semibold leading-relaxed text-ink/85 sm:text-base">
+            <p className="mt-3 max-w-xl text-justify text-sm font-semibold leading-relaxed text-ink/85 sm:text-base">
               Makhluk hidup memerlukan makanan untuk memperoleh energi, tumbuh,
               bergerak, dan berkembang biak. Energi itu berasal dari Matahari,
               lalu berpindah dari satu makhluk hidup ke makhluk hidup lain.
@@ -52,7 +52,7 @@ export default function BelajarPage() {
 
             <div className="mt-4 flex items-start gap-3 rounded-2xl border-[3px] border-sun bg-white px-4 py-3">
               <Sun aria-hidden className="mt-0.5 h-5 w-5 shrink-0 text-sun-deep" />
-              <p className="text-sm font-semibold leading-relaxed text-ink/85">
+              <p className="text-justify text-sm font-semibold leading-relaxed text-ink/85">
                 <strong className="font-extrabold text-ink">Ingat:</strong>{" "}
                 tumbuhan tidak menciptakan energi. Produsen menangkap cahaya
                 Matahari dan mengubahnya menjadi energi kimia melalui

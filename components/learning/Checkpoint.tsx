@@ -60,7 +60,7 @@ export function Checkpoint() {
         <p className="mt-1 text-lg font-extrabold text-ink" aria-live="polite">
           Skor kamu {score} dari {CHECKPOINT_QUESTIONS.length}.
         </p>
-        <p className="mx-auto mt-2 max-w-md text-sm font-semibold text-ink/80">
+        <p className="mx-auto mt-2 max-w-md text-justify text-sm font-semibold text-ink/80">
           {score === CHECKPOINT_QUESTIONS.length
             ? "Hebat! Kamu memahami rantai makanan, aliran energi, dan peran pengurai."
             : "Tidak apa-apa. Buka kembali kartu materi atau panel aliran energi, lalu coba lagi."}
@@ -156,7 +156,7 @@ export function Checkpoint() {
       <div aria-live="polite" className="mt-3 min-h-6">
         {selected !== null && (
           <p
-            className={`rounded-xl px-3 py-2 text-sm font-semibold ${
+            className={`rounded-xl px-3 py-2 text-justify text-sm font-semibold ${
               isCorrect
                 ? "bg-produsen-soft text-produsen-deep"
                 : "bg-pengurai-soft text-pengurai-deep"

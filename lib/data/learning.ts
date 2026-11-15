@@ -29,7 +29,7 @@ export const ORGANISM_CARDS: OrganismCard[] = [
     tagline: "Pembuat makanan",
     summary:
       "Produsen membuat makanan sendiri melalui fotosintesis. Mereka menangkap cahaya Matahari, mengambil air dari tanah, dan karbon dioksida dari udara untuk membuat karbohidrat.",
-    examples: ["rumput", "padi", "pohon", "ganggang", "fitoplankton"],
+    examples: ["Rumput", "Padi", "Pohon", "Ganggang", "Fitoplankton"],
     facts: [
       "Tumbuhan tidak menciptakan energi. Mereka mengubah energi cahaya Matahari menjadi energi kimia di dalam makanan.",
       "Fotosintesis juga menghasilkan oksigen yang kita hirup.",
@@ -46,7 +46,7 @@ export const ORGANISM_CARDS: OrganismCard[] = [
     tagline: "Pemakan tumbuhan",
     summary:
       "Konsumen tingkat I memakan produsen atau tumbuhan. Mereka memperoleh energi dari makanan yang dibuat tumbuhan.",
-    examples: ["belalang", "kelinci", "ulat", "sapi", "tikus"],
+    examples: ["Belalang", "Kelinci", "Ulat", "Sapi", "Tikus"],
     facts: [
       "Hewan pemakan tumbuhan disebut herbivora.",
       "Energi yang mereka dapat berasal dari Matahari, tetapi sudah diolah oleh tumbuhan.",
@@ -63,7 +63,7 @@ export const ORGANISM_CARDS: OrganismCard[] = [
     tagline: "Pemakan konsumen I",
     summary:
       "Konsumen tingkat II memakan konsumen tingkat I. Mereka adalah hewan pemakan daging atau pemakan serangga.",
-    examples: ["katak", "burung pemakan serangga", "ular pada rantai tertentu"],
+    examples: ["Katak", "Burung pemakan serangga", "Ular pada rantai tertentu"],
     facts: [
       "Katak dewasa memakan serangga, sedangkan kecebongnya memakan tumbuhan air.",
       "Satu hewan bisa berada di tingkat berbeda pada rantai makanan yang berbeda.",
@@ -80,7 +80,7 @@ export const ORGANISM_CARDS: OrganismCard[] = [
     tagline: "Tingkat trofik tertinggi",
     summary:
       "Konsumen puncak berada pada tingkat trofik paling tinggi dalam contoh rantai makanan. Mereka tidak atau jarang dimangsa oleh hewan lain di ekosistem itu.",
-    examples: ["elang", "harimau", "buaya", "hiu"],
+    examples: ["Elang", "Harimau", "Buaya", "Hiu"],
     facts: [
       "Konsumen puncak tetap mendapat energi paling sedikit karena energi berkurang di setiap tingkat.",
       "Jika konsumen puncak hilang, populasi mangsa di bawahnya dapat meningkat pesat.",
@@ -97,7 +97,7 @@ export const ORGANISM_CARDS: OrganismCard[] = [
     tagline: "Pengembali unsur hara",
     summary:
       "Pengurai menguraikan sisa organisme dan mengembalikan unsur hara ke lingkungan. Jamur dan bakteri bekerja pada sisa tubuh dari semua tingkat trofik, bukan hanya hewan terakhir.",
-    examples: ["jamur", "bakteri"],
+    examples: ["Jamur", "Bakteri"],
     facts: [
       "Pengurai menutup alur materi sehingga unsur hara dapat dipakai tumbuhan lagi.",
       "Tanpa pengurai, sisa makhluk hidup akan menumpuk dan unsur hara tidak kembali ke tanah.",

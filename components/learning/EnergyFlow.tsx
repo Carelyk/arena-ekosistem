@@ -211,7 +211,7 @@ export function EnergyFlow({ ecosystemId = "sawah" }: { ecosystemId?: EcosystemI
                 {active.role}
               </span>
             </div>
-            <p className="text-sm font-semibold leading-relaxed text-ink/85">
+            <p className="text-justify text-sm font-semibold leading-relaxed text-ink/85">
               {active.note}
             </p>
           </div>
@@ -220,7 +220,7 @@ export function EnergyFlow({ ecosystemId = "sawah" }: { ecosystemId?: EcosystemI
 
       <div className="flex items-start gap-3.5 rounded-2xl border-[3px] border-konsumen2 bg-konsumen2-soft p-4 sm:p-5">
         <Info aria-hidden className="mt-0.5 h-5 w-5 shrink-0 text-konsumen2-deep" />
-        <p className="text-sm font-semibold leading-relaxed text-konsumen2-deep">
+        <p className="text-justify text-sm font-semibold leading-relaxed text-konsumen2-deep">
           <strong className="font-extrabold">Arah panah:</strong>{" "}
           {ENERGY_FLOW_NOTE}
         </p>
@@ -236,7 +236,7 @@ export function EnergyFlow({ ecosystemId = "sawah" }: { ecosystemId?: EcosystemI
               <h3 className="font-display text-xl font-semibold text-pengurai-deep">
                 Simulasi Siklus Pengurai & Daur Ulang
               </h3>
-              <p className="text-xs font-semibold text-pengurai-deep/90 mt-0.5">
+              <p className="mt-0.5 text-justify text-xs font-semibold text-pengurai-deep/90">
                 Energi mengalir melalui rantai makanan, sedangkan unsur hara didaur ulang kembali ke lingkungan.
               </p>
             </div>
@@ -285,7 +285,7 @@ export function EnergyFlow({ ecosystemId = "sawah" }: { ecosystemId?: EcosystemI
                   </span>
                 </div>
                 <h4 className="font-display text-sm font-semibold text-pengurai-deep">{item.title}</h4>
-                <p className="text-xs font-semibold text-ink/80 leading-snug">{item.desc}</p>
+                <p className="text-justify text-xs font-semibold leading-snug text-ink/80">{item.desc}</p>
               </div>
             );
           })}

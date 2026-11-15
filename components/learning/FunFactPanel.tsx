@@ -56,7 +56,7 @@ export function FunFactPanel() {
           <p className="mt-2 font-display text-lg font-semibold text-ink">
             {fact.title}
           </p>
-          <p className="mt-1 text-sm font-semibold leading-relaxed text-ink/85">
+          <p className="mt-1 text-justify text-sm font-semibold leading-relaxed text-ink/85">
             {fact.body}
           </p>
         </div>

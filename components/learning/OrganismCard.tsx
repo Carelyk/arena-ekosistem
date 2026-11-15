@@ -47,7 +47,7 @@ export function OrganismCard({ card, learned, onLearned }: {
             <Volume2 className="h-3 w-3" aria-hidden /> Ketuk untuk mendengar
           </p>
         </div>
-        <p className="line-clamp-3 text-sm font-semibold leading-relaxed text-ink/80">{card.summary}</p>
+        <p className="line-clamp-3 text-justify text-sm font-semibold leading-relaxed text-ink/80">{card.summary}</p>
         <span className={`inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wide ${card.textClass}`}>
           {open ? "Tutup detail" : "Buka detail"}
           <ArrowRight className={`h-3.5 w-3.5 transition-transform ${open ? "rotate-90" : ""}`} />
@@ -66,7 +66,7 @@ export function OrganismCard({ card, learned, onLearned }: {
           <p className="text-xs font-extrabold uppercase tracking-wide text-ink-soft">Fungsi & peran penting</p>
           <ul className="mt-2 flex flex-col gap-2.5">
             {card.facts.map((fact) => (
-              <li key={fact} className="flex gap-2.5 text-sm font-semibold leading-relaxed text-ink/85">
+              <li key={fact} className="flex gap-2.5 text-justify text-sm font-semibold leading-relaxed text-ink/85">
                 <span aria-hidden className="mt-0.5 shrink-0 font-extrabold text-produsen-deep">•</span><span>{fact}</span>
               </li>
             ))}

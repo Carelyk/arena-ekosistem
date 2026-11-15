@@ -86,7 +86,7 @@ export function EcosystemExplorer({ activeEcosystem, onEcosystemChange }: Ecosys
       <div className="flex flex-col gap-2">
         <p className="text-xs font-extrabold uppercase tracking-widest text-produsen-deep">Jelajahi ekosistem</p>
         <h2 id="ekosistem-heading" className="font-display text-3xl font-semibold text-ink sm:text-4xl">Jelajahi Rantai Makanan di Berbagai Ekosistem</h2>
-        <p className="max-w-2xl text-sm font-semibold leading-relaxed text-ink-soft">Setiap ekosistem memiliki makhluk hidup yang berbeda, tetapi energi tetap berpindah dari produsen menuju konsumen.</p>
+        <p className="max-w-2xl text-justify text-sm font-semibold leading-relaxed text-ink-soft">Setiap ekosistem memiliki makhluk hidup yang berbeda, tetapi energi tetap berpindah dari produsen menuju konsumen.</p>
       </div>
 
       <div className="flex flex-wrap gap-2 border-b-[3px] border-ink/10 pb-4" role="tablist" aria-label="Pilih ekosistem">
@@ -123,7 +123,7 @@ export function EcosystemExplorer({ activeEcosystem, onEcosystemChange }: Ecosys
         <div className="relative flex flex-wrap items-center justify-between gap-4">
           <div>
             <span className="inline-flex items-center gap-1.5 rounded-full border-2 border-ink/15 bg-white px-3 py-1 text-xs font-extrabold"><Sparkles className="h-3.5 w-3.5 text-sun-deep" />{currentEco.name}</span>
-            <p className="mt-2 max-w-2xl text-sm font-semibold leading-relaxed text-ink/85">{currentEco.summary}</p>
+            <p className="mt-2 max-w-2xl text-justify text-sm font-semibold leading-relaxed text-ink/85">{currentEco.summary}</p>
           </div>
           <div className="flex items-center gap-2">
             <button type="button" onClick={() => { setIsPlaying((value) => !value); playSfx("button-click"); }} disabled={reducedMotion} className="sticker sticker-press inline-flex min-h-11 items-center gap-1.5 rounded-xl border-[3px] border-ink/20 bg-white px-3.5 py-2 text-xs font-extrabold disabled:opacity-50">
@@ -155,13 +155,13 @@ export function EcosystemExplorer({ activeEcosystem, onEcosystemChange }: Ecosys
             <div><p className="text-[10px] font-extrabold uppercase tracking-wide text-ink-soft">Makhluk hidup & peran</p><p className="mt-1 font-display font-semibold text-ink">{selected.emoji} {selected.label}</p><p className="text-xs font-bold text-ink-soft">{selected.role}</p></div>
             <div><p className="text-[10px] font-extrabold uppercase tracking-wide text-ink-soft">Makanan</p><p className="mt-1 text-sm font-bold text-ink">{selectedFood}</p></div>
             <div><p className="text-[10px] font-extrabold uppercase tracking-wide text-ink-soft">Pemangsa</p><p className="mt-1 text-sm font-bold text-ink">{selectedPredator}</p></div>
-            <p className="sm:col-span-3 text-sm font-semibold text-ink/80">{selected.note}</p>
+            <p className="text-justify text-sm font-semibold text-ink/80 sm:col-span-3">{selected.note}</p>
           </div>
         )}
 
         <div className="mt-5 rounded-2xl border-2 border-dashed border-ink/20 bg-white/80 p-4">
           <div className="flex items-center gap-2"><span className="text-2xl" aria-hidden>{currentEco.decomposer.emoji}</span><h3 className="font-display text-sm font-semibold">Pengurai bekerja pada semua tingkat</h3></div>
-          <p className="mt-1 text-xs font-semibold leading-relaxed text-ink/85">{currentEco.decomposerNote}</p>
+          <p className="mt-1 text-justify text-xs font-semibold leading-relaxed text-ink/85">{currentEco.decomposerNote}</p>
           <button data-no-click-sfx type="button" onClick={() => playLearningSound("decomposer")} className="mt-3 inline-flex min-h-9 items-center gap-1.5 rounded-xl border-2 border-pengurai bg-pengurai-soft px-3 py-1.5 text-xs font-extrabold text-pengurai-deep"><Volume2 className="h-3.5 w-3.5" aria-hidden /> Dengar suara pengurai</button>
         </div>
         <div className="mt-6 flex justify-end"><Link href={`/games/susun-cepat?ekosistem=${activeTab}`} className="sticker sticker-press inline-flex min-h-12 items-center gap-2 rounded-2xl bg-sun px-5 py-3 font-display text-base font-semibold text-ink"><span>Coba Susun Rantai Ini</span><ChevronRight className="h-5 w-5" /></Link></div>
