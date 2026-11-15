@@ -28,7 +28,7 @@ export function OrganismCard({ card, learned, onLearned }: {
       <div className={`h-3 w-full ${card.colorClass}`} aria-hidden />
       <button data-no-click-sfx type="button" onClick={handleToggle} aria-expanded={open} aria-controls={detailId} className={`flex w-full flex-1 flex-col items-start gap-3 p-5 text-left ${card.softClass}`}>
         <div className="flex w-full items-start justify-between gap-3">
-          <div className="role-illustration-shell flex h-[88px] w-[120px] items-center justify-center overflow-hidden rounded-2xl border-2 border-ink/15 bg-white shadow-sm">
+          <div className="role-illustration-shell flex h-[108px] w-[158px] items-center justify-center overflow-hidden rounded-2xl border-2 border-ink/15 bg-white shadow-[0_5px_0_rgba(47,43,38,0.10)]">
             <RoleIllustration role={card.id} />
           </div>
           <div className="flex flex-col items-end gap-1">

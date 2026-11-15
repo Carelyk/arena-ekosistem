@@ -49,6 +49,7 @@ export function DuelGame() {
   const savedRef = useRef(false);
   const warnedRoundRef = useRef(-1);
   const ropeTimerRef = useRef<number | null>(null);
+  const roundAdvanceTimerRef = useRef<number | null>(null);
   const { playSfx } = useAudio();
   useGameMusic(screen === "match" || screen === "countdown");
 
@@ -62,6 +63,7 @@ export function DuelGame() {
 
   useEffect(() => () => {
     if (ropeTimerRef.current !== null) window.clearTimeout(ropeTimerRef.current);
+    if (roundAdvanceTimerRef.current !== null) window.clearTimeout(roundAdvanceTimerRef.current);
   }, []);
 
   function kickRope(direction: -1 | 1) {
@@ -244,18 +246,14 @@ export function DuelGame() {
         setStatus(
           `${name} menjawab benar. +${event.points} poin${
             event.bonus ? " (termasuk bonus tercepat +50)" : ""
-          }.${next.phase === "revealed" ? " Ronde selesai." : " Menunggu lawan."}`,
+          }. Ronde selesai; soal berikutnya segera tampil.`,
         );
         break;
       case "wrong":
         kickRope(player === 0 ? 1 : -1);
         playSfx("wrong");
         setStatus(
-          `${name} menjawab salah. Jawaban dikunci.${
-            next.phase === "revealed"
-              ? " Ronde selesai; pembahasan sudah dibuka."
-              : " Menunggu lawan menyelesaikan ronde."
-          }`,
+          `${name} menjawab salah. Ronde selesai; jawaban benar ditampilkan sebelum soal berikutnya.`,
         );
         break;
       case "frozen":
@@ -274,9 +272,23 @@ export function DuelGame() {
       default:
         setStatus("Soal belum dapat dijawab saat ini.");
     }
+
+    if ((event.kind === "correct" || event.kind === "wrong") && next.phase === "revealed") {
+      if (roundAdvanceTimerRef.current !== null) {
+        window.clearTimeout(roundAdvanceTimerRef.current);
+      }
+      roundAdvanceTimerRef.current = window.setTimeout(() => {
+        roundAdvanceTimerRef.current = null;
+        handleNext();
+      }, 1400);
+    }
   }
 
   function handleNext() {
+    if (roundAdvanceTimerRef.current !== null) {
+      window.clearTimeout(roundAdvanceTimerRef.current);
+      roundAdvanceTimerRef.current = null;
+    }
     const engine = engineRef.current;
     if (!engine) return;
     const now = Date.now();
@@ -314,6 +326,10 @@ export function DuelGame() {
   }
 
   function resetToSetup() {
+    if (roundAdvanceTimerRef.current !== null) {
+      window.clearTimeout(roundAdvanceTimerRef.current);
+      roundAdvanceTimerRef.current = null;
+    }
     engineRef.current = null;
     playersRef.current = null;
     setScreen("setup");

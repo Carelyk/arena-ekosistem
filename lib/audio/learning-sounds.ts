@@ -32,7 +32,7 @@ class LearningSoundPlayer {
     return this.context;
   }
 
-  private stopActive(): void {
+  stop(): void {
     for (const source of this.active) {
       try { source.stop(); } catch { /* source may already be finished */ }
     }
@@ -97,7 +97,7 @@ class LearningSoundPlayer {
     if (level <= 0.001) return;
     const context = this.getContext();
     if (!context) return;
-    this.stopActive();
+    this.stop();
     const now = context.currentTime + 0.015;
     const volume = Math.min(0.22, level * 0.2);
 
@@ -168,6 +168,10 @@ let player: LearningSoundPlayer | null = null;
 export function playLearningSound(name: LearningSoundName, level: number): void {
   player ??= new LearningSoundPlayer();
   player.play(name, level);
+}
+
+export function stopLearningSound(): void {
+  player?.stop();
 }
 
 export const LEARNING_SOUND_BY_ORGANISM: Record<string, LearningSoundName> = {

@@ -378,9 +378,9 @@ export function DuelSetup({ bankCount, onStart, error }: DuelSetupProps) {
             </li>
           </ul>
           <p className="mt-3 text-xs font-semibold leading-relaxed text-ink-soft">
-            Pemain yang sudah benar dikunci pada ronde itu. Ronde berakhir saat
-            kedua pemain benar atau waktu habis, lalu jawaban dan pembahasan
-            ditampilkan.
+            Siapa pun yang lebih dulu memilih jawaban akan menutup ronde,
+            baik jawabannya benar maupun salah. Jawaban benar dan pembahasan
+            ditampilkan singkat sebelum soal berikutnya.
           </p>
         </div>
 

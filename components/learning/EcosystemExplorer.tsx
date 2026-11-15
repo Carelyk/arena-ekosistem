@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { useAudio } from "@/components/audio/AudioProvider";
 import { useReducedMotion } from "@/lib/hooks/use-reduced-motion";
+import { useSectionInView } from "@/lib/hooks/use-section-in-view";
 import { ECOSYSTEMS } from "@/lib/data/ecosystems";
 import type { EcosystemId } from "@/lib/types";
 import { LEARNING_SOUND_BY_ORGANISM } from "@/lib/audio/learning-sounds";
@@ -36,7 +37,8 @@ export function EcosystemExplorer({ activeEcosystem, onEcosystemChange }: Ecosys
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const reducedMotion = useReducedMotion();
-  const { playSfx, playLearningSound } = useAudio();
+  const { playSfx, playLearningSound, stopLearningSound } = useAudio();
+  const { ref: sectionRef, inView } = useSectionInView<HTMLDivElement>();
   const currentEco = ECOSYSTEMS.find((eco) => eco.id === activeTab) ?? ECOSYSTEMS[0];
 
   function selectTab(id: EcosystemId) {
@@ -58,12 +60,16 @@ export function EcosystemExplorer({ activeEcosystem, onEcosystemChange }: Ecosys
   }
 
   useEffect(() => {
-    if (!isPlaying || reducedMotion) return;
+    if (!isPlaying || reducedMotion || !inView) return;
     const timer = window.setInterval(() => {
       setActiveStepIndex((previous) => (previous + 1) % currentEco.steps.length);
     }, 2200);
     return () => window.clearInterval(timer);
-  }, [isPlaying, reducedMotion, currentEco.steps.length]);
+  }, [isPlaying, reducedMotion, currentEco.steps.length, inView]);
+
+  useEffect(() => {
+    if (!inView) stopLearningSound();
+  }, [inView, stopLearningSound]);
 
   const selected = selectedIndex === null ? null : currentEco.steps[selectedIndex];
   const selectedFood = selectedIndex === 0
@@ -76,7 +82,7 @@ export function EcosystemExplorer({ activeEcosystem, onEcosystemChange }: Ecosys
       : currentEco.steps[selectedIndex + 1].label;
 
   return (
-    <div className="flex flex-col gap-6 rounded-3xl border-[3px] border-ink/15 bg-white p-5 shadow-sm sm:p-8">
+    <div ref={sectionRef} className={`flex flex-col gap-6 rounded-3xl border-[3px] border-ink/15 bg-white p-5 shadow-sm sm:p-8 ${inView ? "learning-section-active" : "learning-section-idle"}`}>
       <div className="flex flex-col gap-2">
         <p className="text-xs font-extrabold uppercase tracking-widest text-produsen-deep">Jelajahi ekosistem</p>
         <h2 id="ekosistem-heading" className="font-display text-3xl font-semibold text-ink sm:text-4xl">Jelajahi Rantai Makanan di Berbagai Ekosistem</h2>

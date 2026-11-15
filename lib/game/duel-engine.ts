@@ -155,9 +155,7 @@ export class DuelEngine {
 
     if (!isCorrect) {
       state.wrongCount += 1;
-      if (this.players[0].attempted && this.players[1].attempted) {
-        this.closeRound();
-      }
+      this.closeRound();
       return { kind: "wrong", frozenUntil: 0 };
     }
 
@@ -170,9 +168,7 @@ export class DuelEngine {
     }
     state.score += CORRECT_POINTS + (bonus ? FASTEST_BONUS : 0);
 
-    if (this.players[0].attempted && this.players[1].attempted) {
-      this.closeRound();
-    }
+    this.closeRound();
 
     return {
       kind: "correct",

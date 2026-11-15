@@ -22,6 +22,7 @@ import {
 import type { AudioPreferences } from "@/lib/types";
 import {
   playLearningSound as playLearningSoundEffect,
+  stopLearningSound as stopLearningSoundEffect,
   type LearningSoundName,
 } from "@/lib/audio/learning-sounds";
 
@@ -30,6 +31,7 @@ interface AudioContextValue {
   unlocked: boolean;
   playSfx: (name: SfxName) => void;
   playLearningSound: (name: LearningSoundName) => void;
+  stopLearningSound: () => void;
   updatePreferences: (patch: Partial<AudioPreferences>) => void;
   resetPreferences: () => void;
   requestMusic: (enabled: boolean) => void;
@@ -40,6 +42,7 @@ const fallback: AudioContextValue = {
   unlocked: false,
   playSfx: () => undefined,
   playLearningSound: () => undefined,
+  stopLearningSound: () => undefined,
   updatePreferences: () => undefined,
   resetPreferences: () => undefined,
   requestMusic: () => undefined,
@@ -122,6 +125,10 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     playLearningSoundEffect(name, prefs.master * prefs.sfx);
   }, []);
 
+  const stopLearningSound = useCallback(() => {
+    stopLearningSoundEffect();
+  }, []);
+
   const updatePreferences = useCallback((patch: Partial<AudioPreferences>) => {
     const next: AudioPreferences = {
       ...preferencesRef.current,
@@ -170,6 +177,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
         unlocked,
         playSfx,
         playLearningSound,
+        stopLearningSound,
         updatePreferences,
         resetPreferences,
         requestMusic,

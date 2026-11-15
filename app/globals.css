@@ -269,6 +269,35 @@
 .scene-swim { animation: scene-swim 2.4s ease-in-out infinite; }
 .scene-plankton { animation: role-sun-pulse 1.8s ease-in-out infinite; }
 
+/* Keep the long learning page calm: each scene animates only while its
+   section is actually on screen. Interactive controls still work normally. */
+.learning-section-idle .role-leaves,
+.learning-section-idle .role-roots,
+.learning-section-idle .role-sun,
+.learning-section-idle .role-grasshopper,
+.learning-section-idle .role-legs,
+.learning-section-idle .role-frog-eyes,
+.learning-section-idle .role-tongue,
+.learning-section-idle .role-wing-left,
+.learning-section-idle .role-wing-right,
+.learning-section-idle .role-eagle,
+.learning-section-idle .role-mushroom,
+.learning-section-idle .role-spores,
+.learning-section-idle .role-nutrients,
+.learning-section-idle .ecosystem-energy-pulse,
+.learning-section-idle .scene-plant,
+.learning-section-idle .scene-hop,
+.learning-section-idle .scene-frog,
+.learning-section-idle .scene-snake,
+.learning-section-idle .scene-eagle,
+.learning-section-idle .scene-crawl,
+.learning-section-idle .scene-swim,
+.learning-section-idle .scene-plankton,
+.learning-section-idle .scene-drift,
+.learning-section-idle .eco-backdrop span {
+  animation-play-state: paused !important;
+}
+
 @keyframes role-example-enter { from { opacity: 0; transform: translateY(8px) scale(.92); } to { opacity: 1; transform: translateY(0) scale(1); } }
 @keyframes eco-float { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-10px) rotate(2deg); } }
 @keyframes eco-bubble { from { transform: translateY(28px) scale(.7); opacity: 0; } 25% { opacity: .55; } to { transform: translateY(-150px) scale(1.15); opacity: 0; } }

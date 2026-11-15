@@ -98,7 +98,7 @@ export function PlayerPanel({
           {attempted && solved && phase !== "revealed" && (
             <p className="flex items-center gap-2 rounded-xl bg-white/80 px-2.5 py-2 text-xs font-extrabold text-ink">
               <CheckCircle2 aria-hidden className="h-4 w-4 text-duel-green" />
-              Sudah benar. Panel dikunci untuk ronde ini.
+              Jawaban benar! Soal berikutnya segera tampil.
             </p>
           )}
           {attempted && !solved && phase !== "revealed" && (

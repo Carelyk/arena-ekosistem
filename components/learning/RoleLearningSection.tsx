@@ -5,12 +5,16 @@ import { useEffect, useState } from "react";
 import { OrganismCard } from "@/components/learning/OrganismCard";
 import type { OrganismCard as OrganismCardData } from "@/lib/data/learning";
 import { readJson, writeJson } from "@/lib/storage";
+import { useSectionInView } from "@/lib/hooks/use-section-in-view";
+import { useAudio } from "@/components/audio/AudioProvider";
 
 const LEARNED_KEY = "eco.learned_roles";
 
 export function RoleLearningSection({ cards }: { cards: OrganismCardData[] }) {
   const [learned, setLearned] = useState<string[]>([]);
   const [ready, setReady] = useState(false);
+  const { ref: sectionRef, inView } = useSectionInView<HTMLDivElement>();
+  const { stopLearningSound } = useAudio();
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -24,6 +28,10 @@ export function RoleLearningSection({ cards }: { cards: OrganismCardData[] }) {
     return () => window.clearTimeout(timer);
   }, [cards]);
 
+  useEffect(() => {
+    if (!inView) stopLearningSound();
+  }, [inView, stopLearningSound]);
+
   function markLearned(id: string) {
     setLearned((current) => {
       if (current.includes(id)) return current;
@@ -36,7 +44,7 @@ export function RoleLearningSection({ cards }: { cards: OrganismCardData[] }) {
   const complete = ready && learned.length === cards.length;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div ref={sectionRef} className={`flex flex-col gap-4 ${inView ? "learning-section-active" : "learning-section-idle"}`}>
       <div className="rounded-2xl border-2 border-ink/10 bg-white p-3" aria-live="polite">
         <div className="flex items-center justify-between gap-3 text-xs font-extrabold text-ink-soft">
           <span>Progres belajar lima peran</span>

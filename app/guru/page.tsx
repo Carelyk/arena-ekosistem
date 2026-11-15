@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import {
-  loadQuestionBank,
   loadQuestionBankHybrid,
   saveQuestionRemote,
   deleteQuestionRemote,

@@ -4,6 +4,7 @@ import { ArrowRight, Info, Pause, Play, RotateCcw, ChevronLeft, ChevronRight, Vo
 import { useEffect, useState } from "react";
 import { useAudio } from "@/components/audio/AudioProvider";
 import { useReducedMotion } from "@/lib/hooks/use-reduced-motion";
+import { useSectionInView } from "@/lib/hooks/use-section-in-view";
 import {
   ENERGY_FLOW_NOTE,
 } from "@/lib/data/learning";
@@ -46,13 +47,14 @@ export function EnergyFlow({ ecosystemId = "sawah" }: { ecosystemId?: EcosystemI
   const [decomposerStep, setDecomposerStep] = useState(0);
   const [decomposerPlaying, setDecomposerPlaying] = useState(true);
   const reducedMotion = useReducedMotion();
-  const { playSfx, playLearningSound } = useAudio();
+  const { playSfx, playLearningSound, stopLearningSound } = useAudio();
+  const { ref: sectionRef, inView } = useSectionInView<HTMLDivElement>();
 
   const activeIndex = flow.findIndex((step) => step.id === activeId);
   const active = flow[activeIndex >= 0 ? activeIndex : 0] ?? flow[0];
 
   useEffect(() => {
-    if (!isPlaying || reducedMotion) return;
+    if (!isPlaying || reducedMotion || !inView) return;
     const timer = window.setInterval(() => {
       setActiveId((current) => {
         const idx = flow.findIndex((s) => s.id === current);
@@ -63,15 +65,19 @@ export function EnergyFlow({ ecosystemId = "sawah" }: { ecosystemId?: EcosystemI
       });
     }, 2500);
     return () => window.clearInterval(timer);
-  }, [isPlaying, reducedMotion, flow, playLearningSound]);
+  }, [isPlaying, reducedMotion, flow, playLearningSound, inView]);
 
   useEffect(() => {
-    if (!decomposerPlaying || reducedMotion) return;
+    if (!decomposerPlaying || reducedMotion || !inView) return;
     const timer = window.setInterval(() => {
       setDecomposerStep((prev) => (prev + 1) % 4);
     }, 1800);
     return () => window.clearInterval(timer);
-  }, [decomposerPlaying, reducedMotion]);
+  }, [decomposerPlaying, reducedMotion, inView]);
+
+  useEffect(() => {
+    if (!inView) stopLearningSound();
+  }, [inView, stopLearningSound]);
 
   function handlePrev() {
     playSfx("button-click");
@@ -96,7 +102,7 @@ export function EnergyFlow({ ecosystemId = "sawah" }: { ecosystemId?: EcosystemI
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div ref={sectionRef} className={`flex flex-col gap-6 ${inView ? "learning-section-active" : "learning-section-idle"}`}>
       <div className="rounded-3xl border-[3px] border-ink/15 bg-white p-5 sm:p-7 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
           <p className="text-sm font-bold text-ink-soft">
