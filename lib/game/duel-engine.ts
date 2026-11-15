@@ -269,8 +269,9 @@ export function pickDuelQuestions(
   difficulty: "mudah" | "sedang" | "sulit" | "campuran" = "campuran",
   category: "all" | CategoryId = "all",
   count = MAX_ROUNDS,
+  suppliedBank?: EcoQuestion[],
 ): EcoQuestion[] {
-  const bank = loadQuestionBank().filter(isUsableQuestion);
+  const bank = (suppliedBank ?? loadQuestionBank()).filter(isUsableQuestion);
   const filtered = bank.filter((q: EcoQuestion) => {
     if (difficulty !== "campuran" && q.difficulty !== difficulty) return false;
     if (category !== "all" && q.category !== category) return false;

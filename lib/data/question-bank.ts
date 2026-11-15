@@ -1,6 +1,7 @@
 import { applySeedRotation, SEED_QUESTIONS } from "@/lib/data/questions";
 import { readJson, STORAGE_KEYS, writeJson } from "@/lib/storage";
 import type { CategoryId, Difficulty, EcoQuestion, OptionIndex } from "@/lib/types";
+import { getSupabase } from "@/lib/supabase";
 
 function isOptionIndex(value: unknown): value is OptionIndex {
   return value === 0 || value === 1 || value === 2 || value === 3;
@@ -62,6 +63,51 @@ export function resetQuestionBank(): EcoQuestion[] {
   const seeds = seedBank();
   writeJson(STORAGE_KEYS.questions, seeds);
   return seeds;
+}
+
+type QuestionRow = {
+  id: string; prompt: string; options: string[]; correct_index: number;
+  explanation: string; category: CategoryId; difficulty: Difficulty;
+  reviewed: boolean; active: boolean; origin: "seed" | "guru";
+};
+
+function fromRow(row: QuestionRow): EcoQuestion {
+  return { id: row.id, text: row.prompt, options: row.options as EcoQuestion["options"],
+    correctIndex: row.correct_index as OptionIndex, explanation: row.explanation,
+    category: row.category, difficulty: row.difficulty, reviewed: row.reviewed,
+    active: row.active, origin: row.origin };
+}
+
+export async function loadQuestionBankHybrid(): Promise<{ questions: EcoQuestion[]; online: boolean }> {
+  const client = getSupabase();
+  if (client) {
+    const { data, error } = await client.from("eco_questions").select("id,prompt,options,correct_index,explanation,category,difficulty,reviewed,active,origin").order("created_at");
+    if (!error && data?.length) {
+      const questions = (data as QuestionRow[]).map(fromRow);
+      saveQuestionBank(questions);
+      return { questions, online: true };
+    }
+  }
+  return { questions: loadQuestionBank(), online: false };
+}
+
+export async function saveQuestionRemote(question: EcoQuestion): Promise<boolean> {
+  const client = getSupabase();
+  if (!client) return false;
+  const { error } = await client.from("eco_questions").upsert({
+    id: question.id, prompt: question.text, options: question.options,
+    correct_index: question.correctIndex, explanation: question.explanation,
+    category: question.category, difficulty: question.difficulty,
+    reviewed: question.reviewed, active: question.active, origin: question.origin,
+  });
+  return !error;
+}
+
+export async function deleteQuestionRemote(id: string): Promise<boolean> {
+  const client = getSupabase();
+  if (!client) return false;
+  const { error } = await client.from("eco_questions").delete().eq("id", id);
+  return !error;
 }
 
 export interface QuestionDraft {

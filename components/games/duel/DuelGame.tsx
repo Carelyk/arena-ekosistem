@@ -6,6 +6,7 @@ import { DuelBoard } from "@/components/games/duel/DuelBoard";
 import { DuelResult } from "@/components/games/duel/DuelResult";
 import { DuelSetup, type DuelSetupValues } from "@/components/games/duel/DuelSetup";
 import { loadQuestionBank } from "@/lib/data/question-bank";
+import { loadQuestionBankHybrid } from "@/lib/data/question-bank";
 import {
   DuelEngine,
   MAX_ROUNDS,
@@ -135,8 +136,10 @@ export function DuelGame() {
   );
 
   const startCountdown = useCallback(
-    (values: DuelSetupValues) => {
-      const questions = pickDuelQuestions(values.difficulty, values.category, MAX_ROUNDS);
+    async (values: DuelSetupValues) => {
+      setStatus("Memuat bank soal Supabase...");
+      const loaded = await loadQuestionBankHybrid();
+      const questions = pickDuelQuestions(values.difficulty, values.category, MAX_ROUNDS, loaded.questions);
       if (questions.length === 0) {
         setError(
           "Tidak ada soal yang sesuai dengan filter kategori atau tingkat kesulitan tersebut. Coba ubah filter.",

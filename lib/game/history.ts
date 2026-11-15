@@ -10,6 +10,7 @@ import type {
   LeaderboardFilter,
   MatchRecord,
 } from "@/lib/types";
+import { getSupabase } from "@/lib/supabase";
 
 const MAX_HISTORY = 200;
 
@@ -59,7 +60,38 @@ export function recordMatch(record: MatchRecord): BadgeUnlock[] {
     MAX_HISTORY,
   );
   saveHistory(next);
-  return syncBadgeUnlocks(next);
+  const unlocks = syncBadgeUnlocks(next);
+  void recordMatchOnline(record, unlocks);
+  return unlocks;
+}
+
+async function recordMatchOnline(record: MatchRecord, unlocks: BadgeUnlock[]): Promise<void> {
+  const client = getSupabase();
+  if (!client) return;
+  const { error } = await client.rpc("eco_record_match", {
+    p_id: record.id, p_game: record.game,
+    p_p1_name: record.player1.name, p_p1_avatar: record.player1.avatar, p_p1_score: record.player1.score,
+    p_p2_name: record.player2.name, p_p2_avatar: record.player2.avatar, p_p2_score: record.player2.score,
+    p_winner: record.winner, p_detail: record.detail, p_created_at: record.createdAt,
+  });
+  if (error) return;
+  await Promise.all(unlocks.map((unlock) => client.rpc("eco_record_badge", {
+    p_player_key: unlock.player.trim().toLowerCase(), p_player_name: unlock.player,
+    p_badge_id: unlock.id, p_unlocked_at: unlock.unlockedAt,
+  })));
+}
+
+export async function loadOnlineHistory(): Promise<MatchRecord[] | null> {
+  const client = getSupabase();
+  if (!client) return null;
+  const { data, error } = await client.from("eco_matches").select("*").order("created_at", { ascending: false }).limit(MAX_HISTORY);
+  if (error) return null;
+  return (data ?? []).map((row) => ({
+    id: row.id, game: row.game, winner: row.winner, createdAt: row.created_at,
+    player1: { name: row.player1_name, avatar: row.player1_avatar, score: row.score_p1 },
+    player2: { name: row.player2_name, avatar: row.player2_avatar, score: row.score_p2 },
+    detail: row.detail,
+  } as MatchRecord));
 }
 
 export interface MergedHistory {

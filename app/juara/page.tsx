@@ -19,6 +19,7 @@ import {
   badgesForPlayer,
   buildLeaderboard,
   loadHistory,
+  loadOnlineHistory,
   syncBadgeUnlocks,
 } from "@/lib/game/history";
 import type {
@@ -136,11 +137,13 @@ export default function JuaraPage() {
   useEffect(() => {
     let active = true;
     // Deferred one task so the local read does not call setState in the effect body.
-    const timer = window.setTimeout(() => {
+    const timer = window.setTimeout(async () => {
       const local = loadHistory();
-      const localUnlocks = syncBadgeUnlocks(local);
+      const online = await loadOnlineHistory();
+      const records = online ?? local;
+      const localUnlocks = syncBadgeUnlocks(records);
       if (!active) return;
-      setHistory(local);
+      setHistory(records);
       setUnlocks(localUnlocks);
       setLoading(false);
     }, 0);

@@ -17,6 +17,9 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import {
   loadQuestionBank,
+  loadQuestionBankHybrid,
+  saveQuestionRemote,
+  deleteQuestionRemote,
   resetQuestionBank,
   saveQuestionBank,
   upsertQuestion,
@@ -76,8 +79,9 @@ export default function GuruPage() {
     // Reading localStorage during render would break SSR, and calling setState
     // synchronously inside the effect body triggers a cascading render, so the
     // read is deferred by one task.
-    const timer = window.setTimeout(() => {
-      setBank(loadQuestionBank());
+    const timer = window.setTimeout(async () => {
+      const loadedBank = await loadQuestionBankHybrid();
+      setBank(loadedBank.questions);
       setLoaded(true);
     }, 0);
     return () => window.clearTimeout(timer);
@@ -104,12 +108,13 @@ export default function GuruPage() {
     return { total: bank.length, reviewed, active, usable };
   }, [bank]);
 
-  function persist(next: EcoQuestion[], message: string) {
+  async function persist(next: EcoQuestion[], message: string, changed?: EcoQuestion) {
     setBank(next);
     const ok = saveQuestionBank(next);
+    const online = changed ? await saveQuestionRemote(changed) : false;
     setNotice(
-      ok
-        ? message
+      online ? `${message} Tersimpan di Supabase.` : ok
+        ? `${message} Tersimpan lokal; Supabase tidak terjangkau.`
         : "Perubahan tidak dapat disimpan di perangkat ini (penyimpanan diblokir).",
     );
   }
@@ -128,41 +133,45 @@ export default function GuruPage() {
     setFormOpen(true);
   }
 
-  function submitDraft() {
+  async function submitDraft() {
     const found = validateDraft(draft, bank);
     if (found.length > 0) {
       setErrors(found);
       return;
     }
     const next = upsertQuestion(bank, draft);
-    persist(
+    await persist(
       next,
       draft.id
         ? "Soal diperbarui."
         : draft.reviewed && draft.active
           ? "Soal baru ditambahkan dan siap dipakai di arena."
           : "Soal baru ditambahkan dan menunggu tinjauan.",
+      next.find((question) => question.id === (draft.id ?? next[0].id)),
     );
     setErrors([]);
     setFormOpen(false);
     setDraft(emptyDraft());
   }
 
-  function toggleField(id: string, field: "active" | "reviewed") {
+  async function toggleField(id: string, field: "active" | "reviewed") {
     const next = bank.map((question) =>
       question.id === id ? { ...question, [field]: !question[field] } : question,
     );
-    persist(
+    await persist(
       next,
       field === "active"
         ? "Status aktif diperbarui."
         : "Status tinjauan diperbarui.",
+      next.find((question) => question.id === id),
     );
   }
 
-  function removeQuestion(id: string) {
+  async function removeQuestion(id: string) {
     const next = bank.filter((question) => question.id !== id);
-    persist(next, "Soal dihapus dari bank lokal.");
+    saveQuestionBank(next);
+    const online = await deleteQuestionRemote(id);
+    setNotice(online ? "Soal dihapus dari Supabase." : "Soal dihapus lokal; Supabase tidak terjangkau.");
     setConfirmDelete(null);
   }
 

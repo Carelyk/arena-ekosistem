@@ -1,24 +1,17 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
-const url = (process.env.NEXT_PUBLIC_SUPABASE_URL ?? "").trim();
-const anonKey = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "").trim();
+const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-/**
- * The app must start with zero environment variables. When both values are
- * present we create a browser client; otherwise every online feature degrades
- * to the local-only experience instead of crashing.
- */
-export const isSupabaseConfigured =
-  url.startsWith("https://") && anonKey.length > 20;
+export const supabaseConfigured = Boolean(
+  url?.startsWith("https://") && key?.startsWith("sb_publishable_"),
+);
 
-let client: SupabaseClient | null = null;
-
-export function getSupabase(): SupabaseClient | null {
-  if (!isSupabaseConfigured) return null;
-  if (!client) {
-    client = createClient(url, anonKey, {
+export const supabase: SupabaseClient | null = supabaseConfigured
+  ? createClient(url as string, key as string, {
       auth: { persistSession: false, autoRefreshToken: false },
-    });
-  }
-  return client;
-}
+    })
+  : null;
+
+export const isSupabaseConfigured = supabaseConfigured;
+export function getSupabase(): SupabaseClient | null { return supabase; }
