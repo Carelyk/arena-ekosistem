@@ -246,14 +246,14 @@ export function DuelGame() {
         setStatus(
           `${name} menjawab benar. +${event.points} poin${
             event.bonus ? " (termasuk bonus tercepat +50)" : ""
-          }. Ronde selesai; soal berikutnya segera tampil.`,
+          }. Baca jawaban dan pembahasannya; soal berikutnya tampil dalam 4 detik.`,
         );
         break;
       case "wrong":
         kickRope(player === 0 ? 1 : -1);
         playSfx("wrong");
         setStatus(
-          `${name} menjawab salah. Ronde selesai; jawaban benar ditampilkan sebelum soal berikutnya.`,
+          `${name} menjawab salah. Perhatikan jawaban benar dan pembahasannya; soal berikutnya tampil dalam 4 detik.`,
         );
         break;
       case "frozen":
@@ -280,7 +280,7 @@ export function DuelGame() {
       roundAdvanceTimerRef.current = window.setTimeout(() => {
         roundAdvanceTimerRef.current = null;
         handleNext();
-      }, 1400);
+      }, 4000);
     }
   }
 
